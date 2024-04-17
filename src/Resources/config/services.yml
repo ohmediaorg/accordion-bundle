@@ -2,3 +2,23 @@ services:
     OHMedia\AccordionBundle\Controller\AccordionController:
         tags: ["container.service_subscriber", "controller.service_arguments"]
         autowire: true
+
+    OHMedia\AccordionBundle\Service\AccordionEntityChoice:
+        tags: ["oh_media_security.entity_choice"]
+        autowire: true
+
+    OHMedia\AccordionBundle\Service\AccordionNavItemProvider:
+        tags: ["oh_media_backend.nav_item_provider"]
+        autowire: true
+
+    OHMedia\AccordionBundle\Service\FaqNavItemProvider:
+        tags: ["oh_media_backend.nav_item_provider"]
+        autowire: true
+
+    OHMedia\AccordionBundle\Repository\AccordionRepository:
+        autowire: true
+        tags: ["doctrine.repository_service"]
+
+    OHMedia\AccordionBundle\Security\Voter\AccordionVoter:
+        autowire: true
+        tags: ["security.voter"]
