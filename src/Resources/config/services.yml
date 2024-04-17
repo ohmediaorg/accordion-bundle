@@ -3,6 +3,10 @@ services:
         tags: ["container.service_subscriber", "controller.service_arguments"]
         autowire: true
 
+    OHMedia\AccordionBundle\Controller\AccordionItemController:
+        tags: ["container.service_subscriber", "controller.service_arguments"]
+        autowire: true
+
     OHMedia\AccordionBundle\Service\AccordionEntityChoice:
         tags: ["oh_media_security.entity_choice"]
         autowire: true
@@ -19,6 +23,14 @@ services:
         autowire: true
         tags: ["doctrine.repository_service"]
 
+    OHMedia\AccordionBundle\Repository\AccordionItemRepository:
+        autowire: true
+        tags: ["doctrine.repository_service"]
+
     OHMedia\AccordionBundle\Security\Voter\AccordionVoter:
+        autowire: true
+        tags: ["security.voter"]
+
+    OHMedia\AccordionBundle\Security\Voter\AccordionItemVoter:
         autowire: true
         tags: ["security.voter"]
