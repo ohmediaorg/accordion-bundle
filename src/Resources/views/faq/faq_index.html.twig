@@ -1,17 +1,17 @@
 {% extends '@OHMediaBackend/base.html.twig' %}
 
-{% block meta_title %}Accordions{% endblock %}
+{% block meta_title %}FAQs{% endblock %}
 
 {% block breadcrumbs %}
 {{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb(bootstrap_icon('arrow-down-square-fill') ~ ' Accordions', 'accordion_index'),
+  bootstrap_breadcrumb(bootstrap_icon('question-circle-fill') ~ ' FAQs', 'faq_index'),
 ) }}
 {% endblock %}
 
 {% block actions %}
 {% if is_granted(attributes.create, new_accordion) %}
-<a href="{{ path('accordion_create') }}" class="btn btn-sm btn-primary">
-  <i class="bi bi-plus"></i> Add Accordion</a>
+<a href="{{ path('faq_create') }}" class="btn btn-sm btn-primary">
+  <i class="bi bi-plus"></i> Add FAQ</a>
 {% endif %}
 {% endblock %}
 
@@ -19,7 +19,7 @@
 <div class="card">
   <div class="card-body">
     <div class="card-title card-title-with-count">
-      <h1 class="card-title-heading">Accordions</h1>
+      <h1 class="card-title-heading">FAQs</h1>
       <div class="card-title-count">
         <span class="badge text-bg-primary">
           {{ pagination.count }}
@@ -31,7 +31,7 @@
       <thead>
         <tr>
           <th>Name</th>
-          <th>Items</th>
+          <th>Questions</th>
           <th></th>
         </tr>
       </thead>
@@ -42,19 +42,19 @@
           <td>{{ accordion.items|length }}</td>
           <td>
             {% if is_granted(attributes.view, accordion) %}
-            <a class="btn btn-sm btn-primary btn-action" href="{{ path('accordion_view', {id: accordion.id}) }}" title="View">
+            <a class="btn btn-sm btn-primary btn-action" href="{{ path('faq_view', {id: accordion.id}) }}" title="View">
               {{ bootstrap_icon('eye-fill') }}
               <span class="visually-hidden">View</span>
             </a>
             {% endif %}
             {% if is_granted(attributes.edit, accordion) %}
-            <a class="btn btn-sm btn-primary btn-action" href="{{ path('accordion_edit', {id: accordion.id}) }}" title="Edit">
+            <a class="btn btn-sm btn-primary btn-action" href="{{ path('faq_edit', {id: accordion.id}) }}" title="Edit">
               {{ bootstrap_icon('pen-fill') }}
               <span class="visually-hidden">Edit</span>
             </a>
             {% endif %}
             {% if is_granted(attributes.delete, accordion) %}
-            <a class="btn btn-sm btn-danger btn-action" href="{{ path('accordion_delete', {id: accordion.id}) }}" title="Delete" data-confirm="Are you sure you want to delete this accordion? Clicking OK will take you to a verification step to delete this entry.">
+            <a class="btn btn-sm btn-danger btn-action" href="{{ path('faq_delete', {id: accordion.id}) }}" title="Delete" data-confirm="Are you sure you want to delete this FAQ? Clicking OK will take you to a verification step to delete this entry.">
               {{ bootstrap_icon('trash-fill') }}
               <span class="visually-hidden">Delete</span>
             </a>
@@ -62,7 +62,7 @@
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="100%">No accordions found.</td></tr>
+        <tr><td colspan="100%">No FAQs found.</td></tr>
         {% endfor %}
       </tbody>
     </table>

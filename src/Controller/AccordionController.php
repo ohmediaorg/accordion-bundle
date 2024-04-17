@@ -52,9 +52,15 @@ class AccordionController extends AbstractController
         );
 
         $qb = $this->accordionRepository->createQueryBuilder('a');
+        $qb->where('a.faq = :faq');
+        $qb->setParameter('faq', $newAccordion->isFaq());
         $qb->orderBy('a.id', 'desc');
 
-        return $this->render('@OHMediaAccordion/accordion/accordion_index.html.twig', [
+        $template = $newAccordion->isFaq()
+            ? '@OHMediaAccordion/faq/faq_index.html.twig'
+            : '@OHMediaAccordion/accordion/accordion_index.html.twig';
+
+        return $this->render($template, [
             'pagination' => $this->paginator->paginate($qb, 20),
             'new_accordion' => $newAccordion,
             'attributes' => $this->getAttributes(),
@@ -64,22 +70,22 @@ class AccordionController extends AbstractController
     #[Route('/accordion/create', name: 'accordion_create', methods: ['GET', 'POST'])]
     public function createAccordion(): Response
     {
-        $newAccordion = (new Accordion())->setFaq(false);
+        $accordion = (new Accordion())->setFaq(false);
 
-        return $this->create($newAccordion);
+        return $this->create($accordion);
     }
 
     #[Route('/faq/create', name: 'faq_create', methods: ['GET', 'POST'])]
-    public function faqs(): Response
+    public function createFaq(): Response
     {
-        $newAccordion = (new Accordion())->setFaq(true);
+        $accordion = (new Accordion())->setFaq(true);
 
-        return $this->create($newAccordion);
+        return $this->create($accordion);
     }
 
     private function create(Accordion $accordion): Response
     {
-        $noun = $newAccordion->isFaq() ? 'FAQ' : 'accordion';
+        $noun = $accordion->isFaq() ? 'FAQ' : 'accordion';
 
         $this->denyAccessUnlessGranted(
             AccordionVoter::CREATE,
@@ -98,10 +104,18 @@ class AccordionController extends AbstractController
 
             $this->addFlash('notice', "The $noun was created successfully.");
 
-            return $this->redirectToRoute('accordion_index');
+            $redirectRoute = $accordion->isFaq() ? 'faq_view' : 'accordion_view';
+
+            return $this->redirectToRoute($redirectRoute, [
+                'id' => $accordion->getId(),
+            ]);
         }
 
-        return $this->render('@OHMediaAccordion/accordion/accordion_create.html.twig', [
+        $template = $accordion->isFaq()
+            ? '@OHMediaAccordion/faq/faq_create.html.twig'
+            : '@OHMediaAccordion/accordion/accordion_create.html.twig';
+
+        return $this->render($template, [
             'form' => $form->createView(),
             'accordion' => $accordion,
         ]);
@@ -119,7 +133,11 @@ class AccordionController extends AbstractController
             "You cannot view this $noun."
         );
 
-        return $this->render('@OHMediaAccordion/accordion/accordion_view.html.twig', [
+        $template = $accordion->isFaq()
+            ? '@OHMediaAccordion/faq/faq_view.html.twig'
+            : '@OHMediaAccordion/accordion/accordion_view.html.twig';
+
+        return $this->render($template, [
             'accordion' => $accordion,
             'attributes' => $this->getAttributes(),
         ]);
@@ -155,7 +173,11 @@ class AccordionController extends AbstractController
             ]);
         }
 
-        return $this->render('@OHMediaAccordion/accordion/accordion_edit.html.twig', [
+        $template = $accordion->isFaq()
+            ? '@OHMediaAccordion/faq/faq_edit.html.twig'
+            : '@OHMediaAccordion/accordion/accordion_edit.html.twig';
+
+        return $this->render($template, [
             'form' => $form->createView(),
             'accordion' => $accordion,
         ]);
@@ -189,7 +211,11 @@ class AccordionController extends AbstractController
             return $this->redirectToRoute($redirectRoute);
         }
 
-        return $this->render('@OHMediaAccordion/accordion/accordion_delete.html.twig', [
+        $template = $accordion->isFaq()
+            ? '@OHMediaAccordion/faq/faq_delete.html.twig'
+            : '@OHMediaAccordion/accordion/accordion_delete.html.twig';
+
+        return $this->render($template, [
             'form' => $form->createView(),
             'accordion' => $accordion,
         ]);

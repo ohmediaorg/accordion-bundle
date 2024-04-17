@@ -37,7 +37,7 @@ class Accordion
 
     public function __toString(): string
     {
-        return 'Accordion #'.$this->id;
+        return $this->name;
     }
 
     public function getId(): ?int
