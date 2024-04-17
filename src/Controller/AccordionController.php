@@ -11,7 +11,7 @@ use OHMedia\BootstrapBundle\Service\Paginator;
 use OHMedia\SecurityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -20,12 +20,13 @@ class AccordionController extends AbstractController
 {
     public function __construct(
         private AccordionRepository $accordionRepository,
-        private Paginator $paginator
+        private Paginator $paginator,
+        private RequestStack $requestStack
     ) {
     }
 
     #[Route('/accordions', name: 'accordion_index', methods: ['GET'])]
-    public function accordions(): Response
+    public function indexAccordions(): Response
     {
         $newAccordion = (new Accordion())->setFaq(false);
 
@@ -33,7 +34,7 @@ class AccordionController extends AbstractController
     }
 
     #[Route('/faqs', name: 'faq_index', methods: ['GET'])]
-    public function faqs(): Response
+    public function indexFaqs(): Response
     {
         $newAccordion = (new Accordion())->setFaq(true);
 
@@ -61,28 +62,41 @@ class AccordionController extends AbstractController
     }
 
     #[Route('/accordion/create', name: 'accordion_create', methods: ['GET', 'POST'])]
-    public function create(
-        Request $request,
-        AccordionRepository $accordionRepository
-    ): Response {
-        $accordion = new Accordion();
+    public function createAccordion(): Response
+    {
+        $newAccordion = (new Accordion())->setFaq(false);
+
+        return $this->create($newAccordion);
+    }
+
+    #[Route('/faq/create', name: 'faq_create', methods: ['GET', 'POST'])]
+    public function faqs(): Response
+    {
+        $newAccordion = (new Accordion())->setFaq(true);
+
+        return $this->create($newAccordion);
+    }
+
+    private function create(Accordion $accordion): Response
+    {
+        $noun = $newAccordion->isFaq() ? 'FAQ' : 'accordion';
 
         $this->denyAccessUnlessGranted(
             AccordionVoter::CREATE,
             $accordion,
-            'You cannot create a new accordion.'
+            "You cannot create a new $noun."
         );
 
         $form = $this->createForm(AccordionType::class, $accordion);
 
         $form->add('submit', SubmitType::class);
 
-        $form->handleRequest($request);
+        $form->handleRequest($this->requestStack->getCurrentRequest());
 
         if ($form->isSubmitted() && $form->isValid()) {
             $accordionRepository->save($accordion, true);
 
-            $this->addFlash('notice', 'The accordion was created successfully.');
+            $this->addFlash('notice', "The $noun was created successfully.");
 
             return $this->redirectToRoute('accordion_index');
         }
@@ -94,12 +108,15 @@ class AccordionController extends AbstractController
     }
 
     #[Route('/accordion/{id}', name: 'accordion_view', methods: ['GET'])]
+    #[Route('/faq/{id}', name: 'faq_view', methods: ['GET'])]
     public function view(Accordion $accordion): Response
     {
+        $noun = $accordion->isFaq() ? 'FAQ' : 'accordion';
+
         $this->denyAccessUnlessGranted(
             AccordionVoter::VIEW,
             $accordion,
-            'You cannot view this accordion.'
+            "You cannot view this $noun."
         );
 
         return $this->render('@backend/accordion/accordion_view.html.twig', [
@@ -109,29 +126,31 @@ class AccordionController extends AbstractController
     }
 
     #[Route('/accordion/{id}/edit', name: 'accordion_edit', methods: ['GET', 'POST'])]
-    public function edit(
-        Request $request,
-        Accordion $accordion,
-        AccordionRepository $accordionRepository
-    ): Response {
+    #[Route('/faq/{id}/edit', name: 'faq_edit', methods: ['GET', 'POST'])]
+    public function edit(Accordion $accordion): Response
+    {
+        $noun = $accordion->isFaq() ? 'FAQ' : 'accordion';
+
         $this->denyAccessUnlessGranted(
             AccordionVoter::EDIT,
             $accordion,
-            'You cannot edit this accordion.'
+            "You cannot edit this $noun."
         );
 
         $form = $this->createForm(AccordionType::class, $accordion);
 
         $form->add('submit', SubmitType::class);
 
-        $form->handleRequest($request);
+        $form->handleRequest($this->requestStack->getCurrentRequest());
 
         if ($form->isSubmitted() && $form->isValid()) {
             $accordionRepository->save($accordion, true);
 
-            $this->addFlash('notice', 'The accordion was updated successfully.');
+            $this->addFlash('notice', "The $noun was updated successfully.");
 
-            return $this->redirectToRoute('accordion_view', [
+            $redirectRoute = $accordion->isFaq() ? 'faq_view' : 'accordion_view';
+
+            return $this->redirectToRoute($redirectRoute, [
                 'id' => $accordion->getId(),
             ]);
         }
@@ -143,29 +162,31 @@ class AccordionController extends AbstractController
     }
 
     #[Route('/accordion/{id}/delete', name: 'accordion_delete', methods: ['GET', 'POST'])]
-    public function delete(
-        Request $request,
-        Accordion $accordion,
-        AccordionRepository $accordionRepository
-    ): Response {
+    #[Route('/faq/{id}/delete', name: 'faq_delete', methods: ['GET', 'POST'])]
+    public function delete(Accordion $accordion): Response
+    {
+        $noun = $accordion->isFaq() ? 'FAQ' : 'accordion';
+
         $this->denyAccessUnlessGranted(
             AccordionVoter::DELETE,
             $accordion,
-            'You cannot delete this accordion.'
+            "You cannot delete this $noun."
         );
 
         $form = $this->createForm(DeleteType::class, null);
 
         $form->add('delete', SubmitType::class);
 
-        $form->handleRequest($request);
+        $form->handleRequest($this->requestStack->getCurrentRequest());
 
         if ($form->isSubmitted() && $form->isValid()) {
             $accordionRepository->remove($accordion, true);
 
-            $this->addFlash('notice', 'The accordion was deleted successfully.');
+            $this->addFlash('notice', "The $noun was deleted successfully.");
 
-            return $this->redirectToRoute('accordion_index');
+            $redirectRoute = $accordion->isFaq() ? 'faq_index' : 'accordion_index';
+
+            return $this->redirectToRoute($redirectRoute);
         }
 
         return $this->render('@backend/accordion/accordion_delete.html.twig', [
