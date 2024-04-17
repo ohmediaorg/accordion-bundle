@@ -1,6 +1,6 @@
 <?php
 
-namespace OHMedia\AccordionBundle\Controller\Backend;
+namespace OHMedia\AccordionBundle\Controller;
 
 use OHMedia\AccordionBundle\Entity\Accordion;
 use OHMedia\AccordionBundle\Form\AccordionType;
@@ -51,11 +51,11 @@ class AccordionController extends AbstractController
             "You cannot access the list of $nouns."
         );
 
-        $qb = $accordionRepository->createQueryBuilder('a');
+        $qb = $this->accordionRepository->createQueryBuilder('a');
         $qb->orderBy('a.id', 'desc');
 
-        return $this->render('@backend/accordion/accordion_index.html.twig', [
-            'pagination' => $paginator->paginate($qb, 20),
+        return $this->render('@OHMediaAccordion/accordion/accordion_index.html.twig', [
+            'pagination' => $this->paginator->paginate($qb, 20),
             'new_accordion' => $newAccordion,
             'attributes' => $this->getAttributes(),
         ]);
@@ -94,14 +94,14 @@ class AccordionController extends AbstractController
         $form->handleRequest($this->requestStack->getCurrentRequest());
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $accordionRepository->save($accordion, true);
+            $this->accordionRepository->save($accordion, true);
 
             $this->addFlash('notice', "The $noun was created successfully.");
 
             return $this->redirectToRoute('accordion_index');
         }
 
-        return $this->render('@backend/accordion/accordion_create.html.twig', [
+        return $this->render('@OHMediaAccordion/accordion/accordion_create.html.twig', [
             'form' => $form->createView(),
             'accordion' => $accordion,
         ]);
@@ -119,7 +119,7 @@ class AccordionController extends AbstractController
             "You cannot view this $noun."
         );
 
-        return $this->render('@backend/accordion/accordion_view.html.twig', [
+        return $this->render('@OHMediaAccordion/accordion/accordion_view.html.twig', [
             'accordion' => $accordion,
             'attributes' => $this->getAttributes(),
         ]);
@@ -144,7 +144,7 @@ class AccordionController extends AbstractController
         $form->handleRequest($this->requestStack->getCurrentRequest());
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $accordionRepository->save($accordion, true);
+            $this->accordionRepository->save($accordion, true);
 
             $this->addFlash('notice', "The $noun was updated successfully.");
 
@@ -155,7 +155,7 @@ class AccordionController extends AbstractController
             ]);
         }
 
-        return $this->render('@backend/accordion/accordion_edit.html.twig', [
+        return $this->render('@OHMediaAccordion/accordion/accordion_edit.html.twig', [
             'form' => $form->createView(),
             'accordion' => $accordion,
         ]);
@@ -180,7 +180,7 @@ class AccordionController extends AbstractController
         $form->handleRequest($this->requestStack->getCurrentRequest());
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $accordionRepository->remove($accordion, true);
+            $this->accordionRepository->remove($accordion, true);
 
             $this->addFlash('notice', "The $noun was deleted successfully.");
 
@@ -189,7 +189,7 @@ class AccordionController extends AbstractController
             return $this->redirectToRoute($redirectRoute);
         }
 
-        return $this->render('@backend/accordion/accordion_delete.html.twig', [
+        return $this->render('@OHMediaAccordion/accordion/accordion_delete.html.twig', [
             'form' => $form->createView(),
             'accordion' => $accordion,
         ]);

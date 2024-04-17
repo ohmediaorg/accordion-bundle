@@ -1,6 +1,6 @@
 <?php
 
-namespace OHMedia\AccordionBundle\Controller\Backend;
+namespace OHMedia\AccordionBundle\Controller;
 
 use Doctrine\DBAL\Connection;
 use OHMedia\AccordionBundle\Entity\AccordionItem;
