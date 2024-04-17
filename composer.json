@@ -1,0 +1,20 @@
+{
+    "name": "ohmediaorg/accordion-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony AccordionBundle",
+    "keywords": ["Accordion"],
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Justin Hoffman",
+            "email": "justin@ohmedia.ca"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "symfony/framework-bundle": "6.4.*"
+    },
+    "autoload": {
+        "psr-4": { "OHMedia\\AccordionBundle\\": "src/" }
+    }
+}
