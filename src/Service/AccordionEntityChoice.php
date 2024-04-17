@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Service\EntityChoice;
+namespace OHMedia\AccordionBundle\Service\EntityChoice;
 
-use App\Entity\Accordion;
+use OHMedia\AccordionBundle\Entity\Accordion;
 use OHMedia\SecurityBundle\Service\EntityChoiceInterface;
 
 class AccordionEntityChoice implements EntityChoiceInterface

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Service\Backend\Nav;
+namespace OHMedia\AccordionBundle\Service\Backend\Nav;
 
-use App\Entity\Accordion;
-use App\Security\Voter\AccordionVoter;
+use OHMedia\AccordionBundle\Entity\Accordion;
+use OHMedia\AccordionBundle\Security\Voter\AccordionVoter;
 use OHMedia\BackendBundle\Service\AbstractNavItemProvider;
 use OHMedia\BootstrapBundle\Component\Nav\NavItemInterface;
 use OHMedia\BootstrapBundle\Component\Nav\NavLink;

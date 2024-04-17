@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Controller\Backend;
+namespace OHMedia\AccordionBundle\Controller\Backend;
 
-use App\Entity\Accordion;
-use App\Form\AccordionType;
-use App\Repository\AccordionRepository;
-use App\Security\Voter\AccordionVoter;
+use OHMedia\AccordionBundle\Entity\Accordion;
+use OHMedia\AccordionBundle\Form\AccordionType;
+use OHMedia\AccordionBundle\Repository\AccordionRepository;
+use OHMedia\AccordionBundle\Security\Voter\AccordionVoter;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\BootstrapBundle\Service\Paginator;
 use OHMedia\SecurityBundle\Form\DeleteType;
@@ -111,6 +111,7 @@ class AccordionController extends AbstractController
             $accordionRepository->save($accordion, true);
 
             $this->addFlash('notice', 'The accordion was updated successfully.');
+
             return $this->redirectToRoute('accordion_view', [
                 'id' => $accordion->getId(),
             ]);

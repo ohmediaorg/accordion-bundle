@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Controller\Backend;
+namespace OHMedia\AccordionBundle\Controller\Backend;
 
-use App\Entity\AccordionItem;
-use App\Form\AccordionItemType;
-use App\Repository\AccordionItemRepository;
-use App\Security\Voter\AccordionItemVoter;
 use Doctrine\DBAL\Connection;
+use OHMedia\AccordionBundle\Entity\AccordionItem;
+use OHMedia\AccordionBundle\Form\AccordionItemType;
+use OHMedia\AccordionBundle\Repository\AccordionItemRepository;
+use OHMedia\AccordionBundle\Security\Voter\AccordionItemVoter;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\SecurityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -143,6 +143,7 @@ class AccordionItemController extends AbstractController
             $accordionItemRepository->save($accordionItem, true);
 
             $this->addFlash('notice', 'The accordion item was updated successfully.');
+
             return $this->redirectToRoute('accordion_item_index');
         }
 

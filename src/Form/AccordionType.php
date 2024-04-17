@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Form;
+namespace OHMedia\AccordionBundle\Form;
 
-use App\Entity\Accordion;
+use OHMedia\AccordionBundle\Entity\Accordion;
 // use Doctrine\ORM\EntityRepository;
 // use Doctrine\ORM\QueryBuilder;
 // use OHMedia\FileBundle\Form\Type\FileEntityType;

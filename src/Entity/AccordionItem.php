@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Entity;
+namespace OHMedia\AccordionBundle\Entity;
 
-use App\Repository\AccordionItemRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use OHMedia\AccordionBundle\Repository\AccordionItemRepository;
 use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
 
 #[ORM\Entity(repositoryClass: AccordionItemRepository::class)]
@@ -22,7 +22,7 @@ class AccordionItem
 
     public function __toString(): string
     {
-        return 'Accordion Item #' . $this->id;
+        return 'Accordion Item #'.$this->id;
     }
 
     public function getId(): ?int

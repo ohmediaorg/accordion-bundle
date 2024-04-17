@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Repository;
+namespace OHMedia\AccordionBundle\Repository;
 
-use App\Entity\AccordionItem;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
+use OHMedia\AccordionBundle\Entity\AccordionItem;
 
 /**
  * @method AccordionItem|null find($id, $lockMode = null, $lockVersion = null)

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Security\Voter;
+namespace OHMedia\AccordionBundle\Security\Voter;
 
-use App\Entity\Accordion;
+use OHMedia\AccordionBundle\Entity\Accordion;
 use OHMedia\SecurityBundle\Entity\User;
 use OHMedia\SecurityBundle\Security\Voter\AbstractEntityVoter;
 
