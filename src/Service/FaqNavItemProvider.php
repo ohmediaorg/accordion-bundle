@@ -8,13 +8,13 @@ use OHMedia\BackendBundle\Service\AbstractNavItemProvider;
 use OHMedia\BootstrapBundle\Component\Nav\NavItemInterface;
 use OHMedia\BootstrapBundle\Component\Nav\NavLink;
 
-class AccordionNavItemProvider extends AbstractNavItemProvider
+class FaqNavItemProvider extends AbstractNavItemProvider
 {
     public function getNavItem(): ?NavItemInterface
     {
-        if ($this->isGranted(AccordionVoter::INDEX, (new Accordion())->setFaq(false))) {
-            return (new NavLink('Accordions', 'accordion_index'))
-                ->setIcon('arrow-down-square-fill');
+        if ($this->isGranted(AccordionVoter::INDEX, (new Accordion())->setFaq(true))) {
+            return (new NavLink('FAQs', 'faq_index'))
+                ->setIcon('question-circle-fill');
         }
 
         return null;
