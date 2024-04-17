@@ -18,17 +18,36 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Admin]
 class AccordionController extends AbstractController
 {
+    public function __construct(
+        private AccordionRepository $accordionRepository,
+        private Paginator $paginator
+    ) {
+    }
+
     #[Route('/accordions', name: 'accordion_index', methods: ['GET'])]
-    public function index(
-        AccordionRepository $accordionRepository,
-        Paginator $paginator
-    ): Response {
-        $newAccordion = new Accordion();
+    public function accordions(): Response
+    {
+        $newAccordion = (new Accordion())->setFaq(false);
+
+        return $this->index($newAccordion);
+    }
+
+    #[Route('/faqs', name: 'faq_index', methods: ['GET'])]
+    public function faqs(): Response
+    {
+        $newAccordion = (new Accordion())->setFaq(true);
+
+        return $this->index($newAccordion);
+    }
+
+    private function index(Accordion $newAccordion): Response
+    {
+        $nouns = $newAccordion->isFaq() ? 'FAQs' : 'accordions';
 
         $this->denyAccessUnlessGranted(
             AccordionVoter::INDEX,
             $newAccordion,
-            'You cannot access the list of accordions.'
+            "You cannot access the list of $nouns."
         );
 
         $qb = $accordionRepository->createQueryBuilder('a');
