@@ -3,6 +3,7 @@
 namespace OHMedia\AccordionBundle\Controller;
 
 use Doctrine\DBAL\Connection;
+use OHMedia\AccordionBundle\Entity\Accordion;
 use OHMedia\AccordionBundle\Entity\AccordionItem;
 use OHMedia\AccordionBundle\Form\AccordionItemType;
 use OHMedia\AccordionBundle\Repository\AccordionItemRepository;
@@ -21,23 +22,31 @@ class AccordionItemController extends AbstractController
 {
     private const CSRF_TOKEN_REORDER = 'accordion_item_reorder';
 
-    #[Route('/accordion-items', name: 'accordion_item_index', methods: ['GET'])]
-    public function index(AccordionItemRepository $accordionItemRepository): Response
-    {
+    #[Route('/faq/{id}/questions', name: 'faq_question_index', methods: ['GET'])]
+    #[Route('/accordion/{id}/items', name: 'accordion_item_index', methods: ['GET'])]
+    public function index(
+        Accordion $accordion,
+        AccordionItemRepository $accordionItemRepository
+    ): Response {
         $newAccordionItem = new AccordionItem();
+        $newAccordionItem->setAccordion($accordion);
+
+        $nouns = $accordion->isFaq() ? 'FAQ questions' : 'accordion items';
 
         $this->denyAccessUnlessGranted(
             AccordionItemVoter::INDEX,
             $newAccordionItem,
-            'You cannot access the list of accordion items.'
+            "You cannot access the list of accordion $nouns."
         );
 
-        $accordionItems = $accordionItemRepository->createQueryBuilder('f')
-            ->orderBy('f.ordinal', 'asc')
+        $accordionItems = $accordionItemRepository->createQueryBuilder('ai')
+            ->where('ai.accordion = :accordion')
+            ->setParameter('accordion', $accordion)
+            ->orderBy('ai.ordinal', 'asc')
             ->getQuery()
             ->getResult();
 
-        return $this->render('@backend/accordion_item/accordion_item_index.html.twig', [
+        return $this->render('@OHMediaAccordion/accordion_item/accordion_item_index.html.twig', [
             'accordion_items' => $accordionItems,
             'new_accordion_item' => $newAccordionItem,
             'attributes' => $this->getAttributes(),
@@ -115,7 +124,7 @@ class AccordionItemController extends AbstractController
             return $this->redirectToRoute('accordion_item_index');
         }
 
-        return $this->render('@backend/accordion_item/accordion_item_create.html.twig', [
+        return $this->render('@OHMediaAccordion/accordion_item/accordion_item_create.html.twig', [
             'form' => $form->createView(),
             'accordion_item' => $accordionItem,
         ]);
@@ -147,7 +156,7 @@ class AccordionItemController extends AbstractController
             return $this->redirectToRoute('accordion_item_index');
         }
 
-        return $this->render('@backend/accordion_item/accordion_item_edit.html.twig', [
+        return $this->render('@OHMediaAccordion/accordion_item/accordion_item_edit.html.twig', [
             'form' => $form->createView(),
             'accordion_item' => $accordionItem,
         ]);
@@ -179,7 +188,7 @@ class AccordionItemController extends AbstractController
             return $this->redirectToRoute('accordion_item_index');
         }
 
-        return $this->render('@backend/accordion_item/accordion_item_delete.html.twig', [
+        return $this->render('@OHMediaAccordion/accordion_item/accordion_item_delete.html.twig', [
             'form' => $form->createView(),
             'accordion_item' => $accordionItem,
         ]);
