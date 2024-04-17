@@ -1,0 +1,4 @@
+services:
+    OHMedia\AccordionBundle\Controller\AccordionController:
+        tags: ["container.service_subscriber", "controller.service_arguments"]
+        autowire: true
