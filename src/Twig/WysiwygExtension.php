@@ -39,16 +39,12 @@ class WysiwygExtension extends AbstractWysiwygExtension
 
     public function accordion(Environment $twig, int $id = null)
     {
-        if (!isset($this->accordions[$id])) {
-            $this->accordions[$id] = 0;
-        }
-
-        if ($this->accordions[$id] > 5) {
+        if (isset($this->accordions[$id])) {
             // prevent infinite recursion
-            return '';
+            return;
         }
 
-        ++$this->accordions[$id];
+        $this->accordions[$id] = true;
 
         $accordion = $this->accordionRepository->find($id);
 
@@ -80,16 +76,12 @@ class WysiwygExtension extends AbstractWysiwygExtension
 
     public function faq(Environment $twig, int $id = null)
     {
-        if (!isset($this->faqs[$id])) {
-            $this->faqs[$id] = 0;
-        }
-
-        if ($this->faqs[$id] > 5) {
+        if (isset($this->faqs[$id])) {
             // prevent infinite recursion
-            return '';
+            return;
         }
 
-        ++$this->faqs[$id];
+        $this->faqs[$id] = true;
 
         $faq = $this->faqRepository->find($id);
 
