@@ -20,94 +20,22 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Admin]
 class AccordionItemController extends AbstractController
 {
-    private const CSRF_TOKEN_REORDER = 'accordion_item_reorder';
-
-    #[Route('/faq/{id}/questions', name: 'faq_question_index', methods: ['GET'])]
-    #[Route('/accordion/{id}/items', name: 'accordion_item_index', methods: ['GET'])]
-    public function index(
+    #[Route('/accordion/{id}/item/create', name: 'accordion_item_create', methods: ['GET', 'POST'])]
+    #[Route('/faq/{id}/question/create', name: 'faq_question_create', methods: ['GET', 'POST'])]
+    public function create(
+        Request $request,
         Accordion $accordion,
         AccordionItemRepository $accordionItemRepository
     ): Response {
-        $newAccordionItem = new AccordionItem();
-        $newAccordionItem->setAccordion($accordion);
-
-        $nouns = $accordion->isFaq() ? 'FAQ questions' : 'accordion items';
-
-        $this->denyAccessUnlessGranted(
-            AccordionItemVoter::INDEX,
-            $newAccordionItem,
-            "You cannot access the list of accordion $nouns."
-        );
-
-        $accordionItems = $accordionItemRepository->createQueryBuilder('ai')
-            ->where('ai.accordion = :accordion')
-            ->setParameter('accordion', $accordion)
-            ->orderBy('ai.ordinal', 'asc')
-            ->getQuery()
-            ->getResult();
-
-        return $this->render('@OHMediaAccordion/accordion_item/accordion_item_index.html.twig', [
-            'accordion_items' => $accordionItems,
-            'new_accordion_item' => $newAccordionItem,
-            'attributes' => $this->getAttributes(),
-            'csrf_token_name' => self::CSRF_TOKEN_REORDER,
-        ]);
-    }
-
-    #[Route('/accordion-items/reorder', name: 'accordion_item_reorder_post', methods: ['POST'])]
-    public function reorderPost(
-        Connection $connection,
-        AccordionItemRepository $accordionItemRepository,
-        Request $request
-    ): Response {
-        $this->denyAccessUnlessGranted(
-            AccordionItemVoter::INDEX,
-            new AccordionItem(),
-            'You cannot reorder the accordion items.'
-        );
-
-        $csrfToken = $request->request->get(self::CSRF_TOKEN_REORDER);
-
-        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN_REORDER, $csrfToken)) {
-            return new JsonResponse('Invalid CSRF token.', 400);
-        }
-
-        $accordionItems = $request->request->all('order');
-
-        $connection->beginTransaction();
-
-        try {
-            foreach ($accordionItems as $ordinal => $id) {
-                $accordionItem = $accordionItemRepository->find($id);
-
-                if ($accordionItem) {
-                    $accordionItem->setOrdinal($ordinal);
-
-                    $accordionItemRepository->save($accordionItem, true);
-                }
-            }
-
-            $connection->commit();
-        } catch (\Exception $e) {
-            $connection->rollBack();
-
-            return new JsonResponse('Data unable to be saved.', 400);
-        }
-
-        return new JsonResponse();
-    }
-
-    #[Route('/accordion-item/create', name: 'accordion_item_create', methods: ['GET', 'POST'])]
-    public function create(
-        Request $request,
-        AccordionItemRepository $accordionItemRepository
-    ): Response {
         $accordionItem = new AccordionItem();
+        $accordionItem->setAccordion($accordion);
+
+        $noun = $accordion->isFaq() ? 'FAQ question' : 'accordion item';
 
         $this->denyAccessUnlessGranted(
             AccordionItemVoter::CREATE,
             $accordionItem,
-            'You cannot create a new accordion item.'
+            "You cannot create a new $noun."
         );
 
         $form = $this->createForm(AccordionItemType::class, $accordionItem);
@@ -119,14 +47,23 @@ class AccordionItemController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $accordionItemRepository->save($accordionItem, true);
 
-            $this->addFlash('notice', 'The accordion item was created successfully.');
+            $this->addFlash('notice', "The $noun was created successfully.");
 
-            return $this->redirectToRoute('accordion_item_index');
+            $redirectRoute = $accordion->isFaq() ? 'faq_question_index' : 'accordion_item_index';
+
+            return $this->redirectToRout e($redirectRoute, [
+                'id' => $accordion->getId(),
+            ]);
         }
 
-        return $this->render('@OHMediaAccordion/accordion_item/accordion_item_create.html.twig', [
+        $template = $accordion->isFaq()
+            ? '@OHMediaAccordion/faq/question/faq_question_create.html.twig'
+            : '@OHMediaAccordion/accordion/item/accordion_item_create.html.twig';
+
+        return $this->render($template, [
             'form' => $form->createView(),
             'accordion_item' => $accordionItem,
+            'accordion' => $accordion,
         ]);
     }
 
@@ -192,14 +129,5 @@ class AccordionItemController extends AbstractController
             'form' => $form->createView(),
             'accordion_item' => $accordionItem,
         ]);
-    }
-
-    private function getAttributes(): array
-    {
-        return [
-            'create' => AccordionItemVoter::CREATE,
-            'delete' => AccordionItemVoter::DELETE,
-            'edit' => AccordionItemVoter::EDIT,
-        ];
     }
 }

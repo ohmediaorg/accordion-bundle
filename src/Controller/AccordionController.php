@@ -3,8 +3,11 @@
 namespace OHMedia\AccordionBundle\Controller;
 
 use OHMedia\AccordionBundle\Entity\Accordion;
+use OHMedia\AccordionBundle\Entity\AccordionItem;
 use OHMedia\AccordionBundle\Form\AccordionType;
+use OHMedia\AccordionBundle\Repository\AccordionItemRepository;
 use OHMedia\AccordionBundle\Repository\AccordionRepository;
+use OHMedia\AccordionBundle\Security\Voter\AccordionItemVoter;
 use OHMedia\AccordionBundle\Security\Voter\AccordionVoter;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\BootstrapBundle\Service\Paginator;
@@ -18,6 +21,8 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Admin]
 class AccordionController extends AbstractController
 {
+    private const CSRF_TOKEN_REORDER = 'accordion_item_reorder';
+
     public function __construct(
         private AccordionRepository $accordionRepository,
         private Paginator $paginator,
@@ -123,8 +128,10 @@ class AccordionController extends AbstractController
 
     #[Route('/accordion/{id}', name: 'accordion_view', methods: ['GET'])]
     #[Route('/faq/{id}', name: 'faq_view', methods: ['GET'])]
-    public function view(Accordion $accordion): Response
-    {
+    public function view(
+        Accordion $accordion,
+        AccordionItemRepository $accordionItemRepository
+    ): Response {
         $noun = $accordion->isFaq() ? 'FAQ' : 'accordion';
 
         $this->denyAccessUnlessGranted(
@@ -137,10 +144,62 @@ class AccordionController extends AbstractController
             ? '@OHMediaAccordion/faq/faq_view.html.twig'
             : '@OHMediaAccordion/accordion/accordion_view.html.twig';
 
+        $newAccordionItem = new AccordionItem();
+        $newAccordionItem->setAccordion($accordion);
+
         return $this->render($template, [
             'accordion' => $accordion,
             'attributes' => $this->getAttributes(),
+            'new_accordion_item' => $newAccordionItem,
+            'csrf_token_name' => self::CSRF_TOKEN_REORDER,
         ]);
+    }
+
+    #[Route('/accordion/{id}/items/reorder', name: 'accordion_item_reorder_post', methods: ['POST'])]
+    #[Route('/faq/{id}/question/reorder', name: 'faq_question_reorder_post', methods: ['POST'])]
+    public function reorderPost(
+        Connection $connection,
+        Accordion $accordion,
+        AccordionItemRepository $accordionItemRepository,
+        Request $request
+    ): Response {
+        $nouns = $accordion->isFaq() ? 'FAQ questions' : 'accordion items';
+
+        $this->denyAccessUnlessGranted(
+            AccordionVoter::INDEX,
+            $accordion,
+            "You cannot reorder the $nouns."
+        );
+
+        $csrfToken = $request->request->get(self::CSRF_TOKEN_REORDER);
+
+        if (!$this->isCsrfTokenValid(self::CSRF_TOKEN_REORDER, $csrfToken)) {
+            return new JsonResponse('Invalid CSRF token.', 400);
+        }
+
+        $accordionItems = $request->request->all('order');
+
+        $connection->beginTransaction();
+
+        try {
+            foreach ($accordionItems as $ordinal => $id) {
+                $accordionItem = $accordionItemRepository->find($id);
+
+                if ($accordionItem) {
+                    $accordionItem->setOrdinal($ordinal);
+
+                    $accordionItemRepository->save($accordionItem, true);
+                }
+            }
+
+            $connection->commit();
+        } catch (\Exception $e) {
+            $connection->rollBack();
+
+            return new JsonResponse('Data unable to be saved.', 400);
+        }
+
+        return new JsonResponse();
     }
 
     #[Route('/accordion/{id}/edit', name: 'accordion_edit', methods: ['GET', 'POST'])]
@@ -221,13 +280,20 @@ class AccordionController extends AbstractController
         ]);
     }
 
-    private function getAttributes(): array
+    public static function getAttributes(): array
     {
         return [
-            'view' => AccordionVoter::VIEW,
-            'create' => AccordionVoter::CREATE,
-            'delete' => AccordionVoter::DELETE,
-            'edit' => AccordionVoter::EDIT,
+            'accordion' => [
+                'view' => AccordionVoter::VIEW,
+                'create' => AccordionVoter::CREATE,
+                'delete' => AccordionVoter::DELETE,
+                'edit' => AccordionVoter::EDIT,
+            ],
+            'accordion_item' => [
+                'create' => AccordionItemVoter::CREATE,
+                'delete' => AccordionItemVoter::DELETE,
+                'edit' => AccordionItemVoter::EDIT,
+            ],
         ];
     }
 }
