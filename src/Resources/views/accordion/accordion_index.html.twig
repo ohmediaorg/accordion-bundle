@@ -32,6 +32,7 @@
         <tr>
           <th>Name</th>
           <th>Items</th>
+          <th>Shortcode</th>
           <th></th>
         </tr>
       </thead>
@@ -40,6 +41,7 @@
         <tr>
           <td>{{ accordion.name }}</td>
           <td>{{ accordion.items|length }}</td>
+          <td><code>{{ '{{ accordion(' ~ accordion.id ~ ') }}' }}</code></td>
           <td>
             {% if is_granted(attributes.accordion.view, accordion) %}
             <a class="btn btn-sm btn-primary btn-action" href="{{ path('accordion_view', {id: accordion.id}) }}" title="View">

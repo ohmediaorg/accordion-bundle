@@ -32,6 +32,7 @@
         <tr>
           <th>Name</th>
           <th>Questions</th>
+          <th>Shortcode</th>
           <th></th>
         </tr>
       </thead>
@@ -40,6 +41,7 @@
         <tr>
           <td>{{ faq.name }}</td>
           <td>{{ faq.questions|length }}</td>
+          <td><code>{{ '{{ faq(' ~ faq.id ~ ') }}' }}</code></td>
           <td>
             {% if is_granted(attributes.faq.view, faq) %}
             <a class="btn btn-sm btn-primary btn-action" href="{{ path('faq_view', {id: faq.id}) }}" title="View">

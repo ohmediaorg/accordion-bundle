@@ -62,3 +62,7 @@ services:
     OHMedia\AccordionBundle\Security\Voter\FaqQuestionVoter:
         autowire: true
         tags: ["security.voter"]
+
+    OHMedia\AccordionBundle\Twig\WysiwygExtension:
+        autowire: true
+        tags: ["twig.extension", "oh_media_wysiwyg.extension"]
