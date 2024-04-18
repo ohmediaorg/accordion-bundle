@@ -5,6 +5,7 @@ namespace OHMedia\AccordionBundle\Security\Voter;
 use OHMedia\AccordionBundle\Entity\Accordion;
 use OHMedia\SecurityBundle\Entity\User;
 use OHMedia\SecurityBundle\Security\Voter\AbstractEntityVoter;
+use OHMedia\WysiwygBundle\Service\Wysiwyg;
 
 class AccordionVoter extends AbstractEntityVoter
 {
@@ -13,6 +14,10 @@ class AccordionVoter extends AbstractEntityVoter
     public const VIEW = 'view';
     public const EDIT = 'edit';
     public const DELETE = 'delete';
+
+    public function __construct(private Wysiwyg $wysiwyg)
+    {
+    }
 
     protected function getAttributes(): array
     {
@@ -52,6 +57,8 @@ class AccordionVoter extends AbstractEntityVoter
 
     protected function canDelete(Accordion $accordion, User $loggedIn): bool
     {
-        return true;
+        $shortcode = sprintf('{{ accordion(%d) }}', $accordion->getId());
+
+        return !$this->wysiwyg->shortcodesInUse($shortcode);
     }
 }

@@ -5,6 +5,7 @@ namespace OHMedia\AccordionBundle\Security\Voter;
 use OHMedia\AccordionBundle\Entity\Faq;
 use OHMedia\SecurityBundle\Entity\User;
 use OHMedia\SecurityBundle\Security\Voter\AbstractEntityVoter;
+use OHMedia\WysiwygBundle\Service\Wysiwyg;
 
 class FaqVoter extends AbstractEntityVoter
 {
@@ -13,6 +14,10 @@ class FaqVoter extends AbstractEntityVoter
     public const VIEW = 'view';
     public const EDIT = 'edit';
     public const DELETE = 'delete';
+
+    public function __construct(private Wysiwyg $wysiwyg)
+    {
+    }
 
     protected function getAttributes(): array
     {
@@ -52,6 +57,8 @@ class FaqVoter extends AbstractEntityVoter
 
     protected function canDelete(Faq $faq, User $loggedIn): bool
     {
-        return true;
+        $shortcode = sprintf('{{ faq(%d) }}', $faq->getId());
+
+        return !$this->wysiwyg->shortcodesInUse($shortcode);
     }
 }

@@ -3,8 +3,11 @@
 namespace OHMedia\AccordionBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Query\Parameter;
 use Doctrine\Persistence\ManagerRegistry;
 use OHMedia\AccordionBundle\Entity\AccordionItem;
+use OHMedia\WysiwygBundle\Repository\WysiwygRepositoryInterface;
 
 /**
  * @method AccordionItem|null find($id, $lockMode = null, $lockVersion = null)
@@ -12,7 +15,7 @@ use OHMedia\AccordionBundle\Entity\AccordionItem;
  * @method AccordionItem[]    findAll()
  * @method AccordionItem[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AccordionItemRepository extends ServiceEntityRepository
+class AccordionItemRepository extends ServiceEntityRepository implements WysiwygRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -35,5 +38,23 @@ class AccordionItemRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function containsWysiwygShortcodes(string ...$shortcodes): bool
+    {
+        $ors = [];
+        $params = new ArrayCollection();
+
+        foreach ($shortcodes as $i => $shortcode) {
+            $ors[] = 'ai.content LIKE :shortcode_'.$i;
+            $params[] = new Parameter('shortcode_'.$i, '%'.$shortcode.'%');
+        }
+
+        return $this->createQueryBuilder('ai')
+            ->select('COUNT(ai)')
+            ->where(implode(' OR ', $ors))
+            ->setParameters($params)
+            ->getQuery()
+            ->getSingleScalarResult() > 0;
     }
 }
