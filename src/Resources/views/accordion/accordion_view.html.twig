@@ -9,10 +9,13 @@
 ) }}
 {% endblock %}
 
+{% set can_create_item = is_granted(attributes.accordion_item.create, new_accordion_item) %}
+{% set create_item_href = path('accordion_item_create', {id: accordion.id}) %}
+
 {% block actions %}
 <div class="btn-group btn-group-sm">
-  {% if is_granted(attributes.accordion_item.create, new_accordion_item) %}
-    <a class="btn btn-primary" href="{{ path('accordion_item_create', {id: accordion.id}) }}">
+  {% if can_create_item %}
+    <a class="btn btn-primary" href="{{ create_item_href }}">
       {{ bootstrap_icon('plus') }}
       Add Item
     </a>
@@ -43,12 +46,14 @@
         </span>
       </div>
     </div>
-    <h2 class="card-subtitle mb-3 text-body-secondary h6">{{ accordion }}</h2>
+    <h2 class="card-subtitle mb-3 text-body-secondary h5">{{ accordion }}</h2>
 
+    {% if accordion.items|length %}
     <table class="table table-striped">
       <thead>
         <tr>
-          <th colspan="2">Item</th>
+          <th>&nbsp;</th>
+          <th>Item</th>
           <th></th>
         </tr>
       </thead>
@@ -77,11 +82,17 @@
             {% endif %}
           </td>
         </tr>
-        {% else %}
-        <tr><td colspan="100%">No items found.</td></tr>
         {% endfor %}
       </tbody>
     </table>
+    {% else %}
+    <p>
+      No items found.
+      {% if can_create_item %}
+      <a href="{{ create_item_href }}">Click here to add an item.</a>
+      {% endif %}
+    </p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
