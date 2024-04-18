@@ -32,7 +32,7 @@ class AccordionItem
 
     public function __toString(): string
     {
-        return 'Accordion Item #'.$this->id;
+        return $this->header;
     }
 
     public function getId(): ?int

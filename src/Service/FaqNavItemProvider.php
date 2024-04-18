@@ -3,6 +3,7 @@
 namespace OHMedia\AccordionBundle\Service;
 
 use OHMedia\AccordionBundle\Entity\Faq;
+use OHMedia\AccordionBundle\Security\Voter\FaqVoter;
 use OHMedia\BackendBundle\Service\AbstractNavItemProvider;
 use OHMedia\BootstrapBundle\Component\Nav\NavItemInterface;
 use OHMedia\BootstrapBundle\Component\Nav\NavLink;

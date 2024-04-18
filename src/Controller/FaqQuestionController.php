@@ -44,12 +44,12 @@ class FaqQuestionController extends AbstractController
 
             $this->addFlash('notice', 'The question was created successfully.');
 
-            return $this->redirectToRoute('faq_question_index', [
+            return $this->redirectToRoute('faq_view', [
                 'id' => $faq->getId(),
             ]);
         }
 
-        return $this->render('@OHMediaFaq/faq/question/faq_question_create.html.twig', [
+        return $this->render('@OHMediaAccordion/faq/question/faq_question_create.html.twig', [
             'form' => $form->createView(),
             'faq_question' => $faqQuestion,
             'faq' => $faq,
@@ -68,6 +68,8 @@ class FaqQuestionController extends AbstractController
             'You cannot edit this question.'
         );
 
+        $faq = $faqQuestion->getFaq();
+
         $form = $this->createForm(FaqQuestionType::class, $faqQuestion);
 
         $form->add('submit', SubmitType::class);
@@ -79,12 +81,15 @@ class FaqQuestionController extends AbstractController
 
             $this->addFlash('notice', 'The question was updated successfully.');
 
-            return $this->redirectToRoute('faq_question_index');
+            return $this->redirectToRoute('faq_view', [
+                'id' => $faq->getId(),
+            ]);
         }
 
-        return $this->render('@OHMediaFaq/faq/question/faq_question_edit.html.twig', [
+        return $this->render('@OHMediaAccordion/faq/question/faq_question_edit.html.twig', [
             'form' => $form->createView(),
             'faq_question' => $faqQuestion,
+            'faq' => $faq,
         ]);
     }
 
@@ -100,6 +105,8 @@ class FaqQuestionController extends AbstractController
             'You cannot delete this question.'
         );
 
+        $faq = $faqQuestion->getFaq();
+
         $form = $this->createForm(DeleteType::class, null);
 
         $form->add('delete', SubmitType::class);
@@ -111,12 +118,15 @@ class FaqQuestionController extends AbstractController
 
             $this->addFlash('notice', 'The question was deleted successfully.');
 
-            return $this->redirectToRoute('faq_question_index');
+            return $this->redirectToRoute('faq_view', [
+                'id' => $faq->getId(),
+            ]);
         }
 
-        return $this->render('@OHMediaFaq/faq/question/faq_question_delete.html.twig', [
+        return $this->render('@OHMediaAccordion/faq/question/faq_question_delete.html.twig', [
             'form' => $form->createView(),
             'faq_question' => $faqQuestion,
+            'faq' => $faq,
         ]);
     }
 }

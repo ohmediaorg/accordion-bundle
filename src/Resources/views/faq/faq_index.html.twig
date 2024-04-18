@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block actions %}
-{% if is_granted(attributes.accordion.create, new_accordion) %}
+{% if is_granted(attributes.faq.create, new_faq) %}
 <a href="{{ path('faq_create') }}" class="btn btn-sm btn-primary">
   <i class="bi bi-plus"></i> Add FAQ</a>
 {% endif %}
@@ -36,25 +36,25 @@
         </tr>
       </thead>
       <tbody>
-        {% for accordion in pagination.results %}
+        {% for faq in pagination.results %}
         <tr>
-          <td>{{ accordion.name }}</td>
-          <td>{{ accordion.items|length }}</td>
+          <td>{{ faq.name }}</td>
+          <td>{{ faq.questions|length }}</td>
           <td>
-            {% if is_granted(attributes.accordion.view, accordion) %}
-            <a class="btn btn-sm btn-primary btn-action" href="{{ path('faq_view', {id: accordion.id}) }}" title="View">
-              {{ bootstrap_icon('eye-fill') }}
+            {% if is_granted(attributes.faq.view, faq) %}
+            <a class="btn btn-sm btn-primary btn-action" href="{{ path('faq_view', {id: faq.id}) }}" title="View">
+              {{ bootstrap_icon('list') }}
               <span class="visually-hidden">View</span>
             </a>
             {% endif %}
-            {% if is_granted(attributes.accordion.edit, accordion) %}
-            <a class="btn btn-sm btn-primary btn-action" href="{{ path('faq_edit', {id: accordion.id}) }}" title="Edit">
+            {% if is_granted(attributes.faq.edit, faq) %}
+            <a class="btn btn-sm btn-primary btn-action" href="{{ path('faq_edit', {id: faq.id}) }}" title="Edit">
               {{ bootstrap_icon('pen-fill') }}
               <span class="visually-hidden">Edit</span>
             </a>
             {% endif %}
-            {% if is_granted(attributes.accordion.delete, accordion) %}
-            <a class="btn btn-sm btn-danger btn-action" href="{{ path('faq_delete', {id: accordion.id}) }}" title="Delete" data-confirm="Are you sure you want to delete this FAQ? Clicking OK will take you to a verification step to delete this entry.">
+            {% if is_granted(attributes.faq.delete, faq) %}
+            <a class="btn btn-sm btn-danger btn-action" href="{{ path('faq_delete', {id: faq.id}) }}" title="Delete" data-confirm="Are you sure you want to delete this FAQ? Clicking OK will take you to a verification step to delete this entry.">
               {{ bootstrap_icon('trash-fill') }}
               <span class="visually-hidden">Delete</span>
             </a>

@@ -64,26 +64,26 @@ class FaqQuestion
         return $this;
     }
 
-    public function getHeader(): ?string
+    public function getQuestion(): ?string
     {
-        return $this->header;
+        return $this->question;
     }
 
-    public function setHeader(string $header): static
+    public function setQuestion(string $question): static
     {
-        $this->header = $header;
+        $this->question = $question;
 
         return $this;
     }
 
-    public function getContent(): ?string
+    public function getAnswer(): ?string
     {
-        return $this->content;
+        return $this->answer;
     }
 
-    public function setContent(string $content): static
+    public function setAnswer(string $answer): static
     {
-        $this->content = $content;
+        $this->answer = $answer;
 
         return $this;
     }

@@ -5,7 +5,7 @@ namespace OHMedia\AccordionBundle\Service;
 use OHMedia\AccordionBundle\Entity\Faq;
 use OHMedia\SecurityBundle\Service\EntityChoiceInterface;
 
-class AccordionEntityChoice implements EntityChoiceInterface
+class FaqEntityChoice implements EntityChoiceInterface
 {
     public function getLabel(): string
     {

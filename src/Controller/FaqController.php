@@ -2,6 +2,7 @@
 
 namespace OHMedia\AccordionBundle\Controller;
 
+use Doctrine\DBAL\Connection;
 use OHMedia\AccordionBundle\Entity\Faq;
 use OHMedia\AccordionBundle\Entity\FaqQuestion;
 use OHMedia\AccordionBundle\Form\FaqType;
@@ -14,6 +15,7 @@ use OHMedia\BootstrapBundle\Service\Paginator;
 use OHMedia\SecurityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,6 +26,7 @@ class FaqController extends AbstractController
     private const CSRF_TOKEN_REORDER = 'faq_question_reorder';
 
     public function __construct(
+        private Connection $connection,
         private FaqRepository $faqRepository,
         private FaqQuestionRepository $faqQuestionRepository,
         private Paginator $paginator,
@@ -34,6 +37,8 @@ class FaqController extends AbstractController
     #[Route('/faqs', name: 'faq_index', methods: ['GET'])]
     public function index(): Response
     {
+        $newFaq = new Faq();
+
         $this->denyAccessUnlessGranted(
             FaqVoter::INDEX,
             $newFaq,
@@ -41,14 +46,9 @@ class FaqController extends AbstractController
         );
 
         $qb = $this->faqRepository->createQueryBuilder('a');
-        $qb->where('a.faq = :faq');
-        $qb->orderBy('a.id', 'desc');
+        $qb->orderBy('a.name', 'asc');
 
-        $template = $newFaq->isFaq()
-            ? '@OHMediaFaq/faq/faq_index.html.twig'
-            : '@OHMediaFaq/faq/faq_index.html.twig';
-
-        return $this->render($template, [
+        return $this->render('@OHMediaAccordion/faq/faq_index.html.twig', [
             'pagination' => $this->paginator->paginate($qb, 20),
             'new_faq' => $newFaq,
             'attributes' => $this->getAttributes(),
@@ -58,6 +58,8 @@ class FaqController extends AbstractController
     #[Route('/faq/create', name: 'faq_create', methods: ['GET', 'POST'])]
     public function create(): Response
     {
+        $faq = new Faq();
+
         $this->denyAccessUnlessGranted(
             FaqVoter::CREATE,
             $faq,
@@ -80,7 +82,7 @@ class FaqController extends AbstractController
             ]);
         }
 
-        return $this->render('@OHMediaFaq/faq/faq_create.html.twig', [
+        return $this->render('@OHMediaAccordion/faq/faq_create.html.twig', [
             'form' => $form->createView(),
             'faq' => $faq,
         ]);
@@ -98,7 +100,7 @@ class FaqController extends AbstractController
         $newFaqQuestion = new FaqQuestion();
         $newFaqQuestion->setFaq($faq);
 
-        return $this->render('@OHMediaFaq/faq/faq_view.html.twig', [
+        return $this->render('@OHMediaAccordion/faq/faq_view.html.twig', [
             'faq' => $faq,
             'attributes' => $this->getAttributes(),
             'new_faq_question' => $newFaqQuestion,
@@ -107,10 +109,8 @@ class FaqController extends AbstractController
     }
 
     #[Route('/faq/{id}/questions/reorder', name: 'faq_question_reorder_post', methods: ['POST'])]
-    public function reorderPost(
-        Connection $connection,
-        Faq $faq
-    ): Response {
+    public function reorderPost(Faq $faq): Response
+    {
         $this->denyAccessUnlessGranted(
             FaqVoter::INDEX,
             $faq,
@@ -127,7 +127,7 @@ class FaqController extends AbstractController
 
         $faqQuestions = $request->request->all('order');
 
-        $connection->beginTransaction();
+        $this->connection->beginTransaction();
 
         try {
             foreach ($faqQuestions as $ordinal => $id) {
@@ -140,9 +140,9 @@ class FaqController extends AbstractController
                 }
             }
 
-            $connection->commit();
+            $this->connection->commit();
         } catch (\Exception $e) {
-            $connection->rollBack();
+            $this->connection->rollBack();
 
             return new JsonResponse('Data unable to be saved.', 400);
         }
@@ -175,7 +175,7 @@ class FaqController extends AbstractController
             ]);
         }
 
-        return $this->render('@OHMediaFaq/faq/faq_edit.html.twig', [
+        return $this->render('@OHMediaAccordion/faq/faq_edit.html.twig', [
             'form' => $form->createView(),
             'faq' => $faq,
         ]);
@@ -204,7 +204,7 @@ class FaqController extends AbstractController
             return $this->redirectToRoute('faq_index');
         }
 
-        return $this->render('@OHMediaFaq/faq/faq_delete.html.twig', [
+        return $this->render('@OHMediaAccordion/faq/faq_delete.html.twig', [
             'form' => $form->createView(),
             'faq' => $faq,
         ]);

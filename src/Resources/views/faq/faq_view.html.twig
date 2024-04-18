@@ -1,32 +1,32 @@
 {% extends '@OHMediaBackend/base.html.twig' %}
 
-{% block meta_title %}{{ accordion }} | Accordions{% endblock %}
+{% block meta_title %}{{ faq }} | Accordions{% endblock %}
 
 {% block breadcrumbs %}
 {{ bootstrap_breadcrumbs(
   bootstrap_breadcrumb(bootstrap_icon('question-circle-fill') ~ ' FAQs', 'faq_index'),
-  bootstrap_breadcrumb(accordion),
+  bootstrap_breadcrumb(faq),
 ) }}
 {% endblock %}
 
 {% block actions %}
 <div class="btn-group btn-group-sm">
-  {% if is_granted(attributes.accordion_item.create, new_accordion_item) %}
-    <a class="btn btn-primary" href="{{ path('faq_question_create', {id: accordion.id}) }}">
+  {% if is_granted(attributes.faq_question.create, new_faq_question) %}
+    <a class="btn btn-primary" href="{{ path('faq_question_create', {id: faq.id}) }}">
       {{ bootstrap_icon('plus') }}
       Add Question
     </a>
   {% endif %}
-  {% if is_granted(attributes.accordion.edit, accordion) %}
-    <a class="btn btn-primary" href="{{ path('faq_edit', {id: accordion.id}) }}">
+  {% if is_granted(attributes.faq.edit, faq) %}
+    <a class="btn btn-primary" href="{{ path('faq_edit', {id: faq.id}) }}">
       {{ bootstrap_icon('pen-fill') }}
-      Edit FAQ
+      Edit
     </a>
   {% endif %}
-  {% if is_granted(attributes.accordion.delete, accordion) %}
-    <a class="btn btn-danger" href="{{ path('faq_delete', {id: accordion.id}) }}" data-confirm="Are you sure you want to delete this FAQ? Clicking OK will take you to a verification step to delete this entry.">
+  {% if is_granted(attributes.faq.delete, faq) %}
+    <a class="btn btn-danger" href="{{ path('faq_delete', {id: faq.id}) }}" data-confirm="Are you sure you want to delete this FAQ? Clicking OK will take you to a verification step to delete this entry.">
       {{ bootstrap_icon('trash-fill') }}
-      Delete FAQ
+      Delete
     </a>
   {% endif %}
 </div>
@@ -39,16 +39,16 @@
       <h1 class="card-title-heading">Questions</h1>
       <div class="card-title-count">
         <span class="badge text-bg-primary">
-          {{ accordion.items|length }}
+          {{ faq.questions|length }}
         </span>
       </div>
     </div>
+    <h2 class="card-subtitle mb-3 text-body-secondary h6">{{ faq }}</h2>
 
     <table class="table table-striped">
       <thead>
         <tr>
-          <th>&nbsp;</th>
-          <th>Question</th>
+          <th colspan="2">Question</th>
           <th></th>
         </tr>
       </thead>
@@ -56,21 +56,21 @@
         data-sortable
         data-sortable-csrf-name="{{ csrf_token_name }}"
         data-sortable-csrf-token="{{ csrf_token(csrf_token_name) }}"
-        data-sortable-url="{{ path('faq_question_reorder_post', {id: accordion.id}) }}"
+        data-sortable-url="{{ path('faq_question_reorder_post', {id: faq.id}) }}"
       >
-      {% for accordion_item in accordion.items %}
-        <tr data-id="{{ accordion_item.id }}">
+      {% for faq_question in faq.questions %}
+        <tr data-id="{{ faq_question.id }}">
           <td data-handle>{{ bootstrap_icon('arrows-move') }}</td>
-          <td>{{ accordion_item.header }}</td>
+          <td>{{ faq_question.question }}</td>
           <td>
-            {% if is_granted(attributes.accordion_item.edit, accordion_item) %}
-            <a class="btn btn-sm btn-primary btn-action" href="{{ path('faq_question_edit', {id: accordion_item.id}) }}" title="Edit">
+            {% if is_granted(attributes.faq_question.edit, faq_question) %}
+            <a class="btn btn-sm btn-primary btn-action" href="{{ path('faq_question_edit', {id: faq_question.id}) }}" title="Edit">
               {{ bootstrap_icon('pen-fill') }}
               <span class="visually-hidden">Edit</span>
             </a>
             {% endif %}
-            {% if is_granted(attributes.accordion_item.delete, accordion_item) %}
-            <a class="btn btn-sm btn-danger btn-action" href="{{ path('faq_question_delete', {id: accordion_item.id}) }}" title="Delete" data-confirm="Are you sure you want to delete this question? Clicking OK will take you to a verification step to delete this entry.">
+            {% if is_granted(attributes.faq_question.delete, faq_question) %}
+            <a class="btn btn-sm btn-danger btn-action" href="{{ path('faq_question_delete', {id: faq_question.id}) }}" title="Delete" data-confirm="Are you sure you want to delete this question? Clicking OK will take you to a verification step to delete this entry.">
               {{ bootstrap_icon('trash-fill') }}
               <span class="visually-hidden">Delete</span>
             </a>

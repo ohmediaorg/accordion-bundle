@@ -2,6 +2,7 @@
 
 namespace OHMedia\AccordionBundle\Controller;
 
+use Doctrine\DBAL\Connection;
 use OHMedia\AccordionBundle\Entity\Accordion;
 use OHMedia\AccordionBundle\Entity\AccordionItem;
 use OHMedia\AccordionBundle\Form\AccordionType;
@@ -14,6 +15,7 @@ use OHMedia\BootstrapBundle\Service\Paginator;
 use OHMedia\SecurityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,47 +28,27 @@ class AccordionController extends AbstractController
     public function __construct(
         private AccordionRepository $accordionRepository,
         private AccordionItemRepository $accordionItemRepository,
+        private Connection $connection,
         private Paginator $paginator,
         private RequestStack $requestStack
     ) {
     }
 
     #[Route('/accordions', name: 'accordion_index', methods: ['GET'])]
-    public function indexAccordions(): Response
+    public function index(): Response
     {
-        $newAccordion = (new Accordion())->setFaq(false);
-
-        return $this->index($newAccordion);
-    }
-
-    #[Route('/faqs', name: 'faq_index', methods: ['GET'])]
-    public function indexFaqs(): Response
-    {
-        $newAccordion = (new Accordion())->setFaq(true);
-
-        return $this->index($newAccordion);
-    }
-
-    private function index(Accordion $newAccordion): Response
-    {
-        $nouns = $newAccordion->isFaq() ? 'FAQs' : 'accordions';
+        $newAccordion = new Accordion();
 
         $this->denyAccessUnlessGranted(
             AccordionVoter::INDEX,
             $newAccordion,
-            "You cannot access the list of $nouns."
+            'You cannot access the list of accordions.'
         );
 
         $qb = $this->accordionRepository->createQueryBuilder('a');
-        $qb->where('a.faq = :faq');
-        $qb->setParameter('faq', $newAccordion->isFaq());
-        $qb->orderBy('a.id', 'desc');
+        $qb->orderBy('a.name', 'asc');
 
-        $template = $newAccordion->isFaq()
-            ? '@OHMediaAccordion/faq/faq_index.html.twig'
-            : '@OHMediaAccordion/accordion/accordion_index.html.twig';
-
-        return $this->render($template, [
+        return $this->render('@OHMediaAccordion/accordion/accordion_index.html.twig', [
             'pagination' => $this->paginator->paginate($qb, 20),
             'new_accordion' => $newAccordion,
             'attributes' => $this->getAttributes(),
@@ -74,29 +56,14 @@ class AccordionController extends AbstractController
     }
 
     #[Route('/accordion/create', name: 'accordion_create', methods: ['GET', 'POST'])]
-    public function createAccordion(): Response
+    public function create(): Response
     {
-        $accordion = (new Accordion())->setFaq(false);
-
-        return $this->create($accordion);
-    }
-
-    #[Route('/faq/create', name: 'faq_create', methods: ['GET', 'POST'])]
-    public function createFaq(): Response
-    {
-        $accordion = (new Accordion())->setFaq(true);
-
-        return $this->create($accordion);
-    }
-
-    private function create(Accordion $accordion): Response
-    {
-        $noun = $accordion->isFaq() ? 'FAQ' : 'accordion';
+        $accordion = new Accordion();
 
         $this->denyAccessUnlessGranted(
             AccordionVoter::CREATE,
             $accordion,
-            "You cannot create a new $noun."
+            'You cannot create a new accordion.'
         );
 
         $form = $this->createForm(AccordionType::class, $accordion);
@@ -108,45 +75,32 @@ class AccordionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->accordionRepository->save($accordion, true);
 
-            $this->addFlash('notice', "The $noun was created successfully.");
+            $this->addFlash('notice', 'The accordion was created successfully.');
 
-            $redirectRoute = $accordion->isFaq() ? 'faq_view' : 'accordion_view';
-
-            return $this->redirectToRoute($redirectRoute, [
+            return $this->redirectToRoute('accordion_view', [
                 'id' => $accordion->getId(),
             ]);
         }
 
-        $template = $accordion->isFaq()
-            ? '@OHMediaAccordion/faq/faq_create.html.twig'
-            : '@OHMediaAccordion/accordion/accordion_create.html.twig';
-
-        return $this->render($template, [
+        return $this->render('@OHMediaAccordion/accordion/accordion_create.html.twig', [
             'form' => $form->createView(),
             'accordion' => $accordion,
         ]);
     }
 
     #[Route('/accordion/{id}', name: 'accordion_view', methods: ['GET'])]
-    #[Route('/faq/{id}', name: 'faq_view', methods: ['GET'])]
     public function view(Accordion $accordion): Response
     {
-        $noun = $accordion->isFaq() ? 'FAQ' : 'accordion';
-
         $this->denyAccessUnlessGranted(
             AccordionVoter::VIEW,
             $accordion,
-            "You cannot view this $noun."
+            'You cannot view this accordion.'
         );
-
-        $template = $accordion->isFaq()
-            ? '@OHMediaAccordion/faq/faq_view.html.twig'
-            : '@OHMediaAccordion/accordion/accordion_view.html.twig';
 
         $newAccordionItem = new AccordionItem();
         $newAccordionItem->setAccordion($accordion);
 
-        return $this->render($template, [
+        return $this->render('@OHMediaAccordion/accordion/accordion_view.html.twig', [
             'accordion' => $accordion,
             'attributes' => $this->getAttributes(),
             'new_accordion_item' => $newAccordionItem,
@@ -155,17 +109,12 @@ class AccordionController extends AbstractController
     }
 
     #[Route('/accordion/{id}/items/reorder', name: 'accordion_item_reorder_post', methods: ['POST'])]
-    #[Route('/faq/{id}/question/reorder', name: 'faq_question_reorder_post', methods: ['POST'])]
-    public function reorderPost(
-        Connection $connection,
-        Accordion $accordion
-    ): Response {
-        $nouns = $accordion->isFaq() ? 'FAQ questions' : 'accordion items';
-
+    public function reorderPost(Accordion $accordion): Response
+    {
         $this->denyAccessUnlessGranted(
             AccordionVoter::INDEX,
             $accordion,
-            "You cannot reorder the $nouns."
+            'You cannot reorder the items.'
         );
 
         $request = $this->requestStack->getCurrentRequest();
@@ -178,7 +127,7 @@ class AccordionController extends AbstractController
 
         $accordionItems = $request->request->all('order');
 
-        $connection->beginTransaction();
+        $this->connection->beginTransaction();
 
         try {
             foreach ($accordionItems as $ordinal => $id) {
@@ -191,9 +140,9 @@ class AccordionController extends AbstractController
                 }
             }
 
-            $connection->commit();
+            $this->connection->commit();
         } catch (\Exception $e) {
-            $connection->rollBack();
+            $this->connection->rollBack();
 
             return new JsonResponse('Data unable to be saved.', 400);
         }
@@ -202,15 +151,12 @@ class AccordionController extends AbstractController
     }
 
     #[Route('/accordion/{id}/edit', name: 'accordion_edit', methods: ['GET', 'POST'])]
-    #[Route('/faq/{id}/edit', name: 'faq_edit', methods: ['GET', 'POST'])]
     public function edit(Accordion $accordion): Response
     {
-        $noun = $accordion->isFaq() ? 'FAQ' : 'accordion';
-
         $this->denyAccessUnlessGranted(
             AccordionVoter::EDIT,
             $accordion,
-            "You cannot edit this $noun."
+            'You cannot edit this accordion.'
         );
 
         $form = $this->createForm(AccordionType::class, $accordion);
@@ -222,35 +168,26 @@ class AccordionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->accordionRepository->save($accordion, true);
 
-            $this->addFlash('notice', "The $noun was updated successfully.");
+            $this->addFlash('notice', 'The accordion was updated successfully.');
 
-            $redirectRoute = $accordion->isFaq() ? 'faq_view' : 'accordion_view';
-
-            return $this->redirectToRoute($redirectRoute, [
+            return $this->redirectToRoute('accordion_view', [
                 'id' => $accordion->getId(),
             ]);
         }
 
-        $template = $accordion->isFaq()
-            ? '@OHMediaAccordion/faq/faq_edit.html.twig'
-            : '@OHMediaAccordion/accordion/accordion_edit.html.twig';
-
-        return $this->render($template, [
+        return $this->render('@OHMediaAccordion/accordion/accordion_edit.html.twig', [
             'form' => $form->createView(),
             'accordion' => $accordion,
         ]);
     }
 
     #[Route('/accordion/{id}/delete', name: 'accordion_delete', methods: ['GET', 'POST'])]
-    #[Route('/faq/{id}/delete', name: 'faq_delete', methods: ['GET', 'POST'])]
     public function delete(Accordion $accordion): Response
     {
-        $noun = $accordion->isFaq() ? 'FAQ' : 'accordion';
-
         $this->denyAccessUnlessGranted(
             AccordionVoter::DELETE,
             $accordion,
-            "You cannot delete this $noun."
+            'You cannot delete this accordion.'
         );
 
         $form = $this->createForm(DeleteType::class, null);
@@ -262,18 +199,12 @@ class AccordionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->accordionRepository->remove($accordion, true);
 
-            $this->addFlash('notice', "The $noun was deleted successfully.");
+            $this->addFlash('notice', 'The accordion was deleted successfully.');
 
-            $redirectRoute = $accordion->isFaq() ? 'faq_index' : 'accordion_index';
-
-            return $this->redirectToRoute($redirectRoute);
+            return $this->redirectToRoute('accordion_index');
         }
 
-        $template = $accordion->isFaq()
-            ? '@OHMediaAccordion/faq/faq_delete.html.twig'
-            : '@OHMediaAccordion/accordion/accordion_delete.html.twig';
-
-        return $this->render($template, [
+        return $this->render('@OHMediaAccordion/accordion/accordion_delete.html.twig', [
             'form' => $form->createView(),
             'accordion' => $accordion,
         ]);

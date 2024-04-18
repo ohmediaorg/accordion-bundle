@@ -19,7 +19,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class AccordionItemController extends AbstractController
 {
     #[Route('/accordion/{id}/item/create', name: 'accordion_item_create', methods: ['GET', 'POST'])]
-    #[Route('/faq/{id}/question/create', name: 'faq_question_create', methods: ['GET', 'POST'])]
     public function create(
         Request $request,
         Accordion $accordion,
@@ -28,12 +27,10 @@ class AccordionItemController extends AbstractController
         $accordionItem = new AccordionItem();
         $accordionItem->setAccordion($accordion);
 
-        $noun = $accordion->isFaq() ? 'FAQ question' : 'accordion item';
-
         $this->denyAccessUnlessGranted(
             AccordionItemVoter::CREATE,
             $accordionItem,
-            "You cannot create a new $noun."
+            'You cannot create a new item.'
         );
 
         $form = $this->createForm(AccordionItemType::class, $accordionItem);
@@ -45,27 +42,21 @@ class AccordionItemController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $accordionItemRepository->save($accordionItem, true);
 
-            $this->addFlash('notice', "The $noun was created successfully.");
+            $this->addFlash('notice', 'The item was created successfully.');
 
-            $redirectRoute = $accordion->isFaq() ? 'faq_question_index' : 'accordion_item_index';
-
-            return $this->redirectToRoute($redirectRoute, [
+            return $this->redirectToRoute('accordion_view', [
                 'id' => $accordion->getId(),
             ]);
         }
 
-        $template = $accordion->isFaq()
-            ? '@OHMediaAccordion/faq/question/faq_question_create.html.twig'
-            : '@OHMediaAccordion/accordion/item/accordion_item_create.html.twig';
-
-        return $this->render($template, [
+        return $this->render('@OHMediaAccordion/accordion/item/accordion_item_create.html.twig', [
             'form' => $form->createView(),
             'accordion_item' => $accordionItem,
             'accordion' => $accordion,
         ]);
     }
 
-    #[Route('/accordion-item/{id}/edit', name: 'accordion_item_edit', methods: ['GET', 'POST'])]
+    #[Route('/accordion/item/{id}/edit', name: 'accordion_item_edit', methods: ['GET', 'POST'])]
     public function edit(
         Request $request,
         AccordionItem $accordionItem,
@@ -76,6 +67,8 @@ class AccordionItemController extends AbstractController
             $accordionItem,
             'You cannot edit this accordion item.'
         );
+
+        $accordion = $accordionItem->getAccordion();
 
         $form = $this->createForm(AccordionItemType::class, $accordionItem);
 
@@ -88,16 +81,19 @@ class AccordionItemController extends AbstractController
 
             $this->addFlash('notice', 'The accordion item was updated successfully.');
 
-            return $this->redirectToRoute('accordion_item_index');
+            return $this->redirectToRoute('accordion_view', [
+                'id' => $accordion->getId(),
+            ]);
         }
 
-        return $this->render('@OHMediaAccordion/accordion_item/accordion_item_edit.html.twig', [
+        return $this->render('@OHMediaAccordion/accordion/item/accordion_item_edit.html.twig', [
             'form' => $form->createView(),
             'accordion_item' => $accordionItem,
+            'accordion' => $accordion,
         ]);
     }
 
-    #[Route('/accordion-item/{id}/delete', name: 'accordion_item_delete', methods: ['GET', 'POST'])]
+    #[Route('/accordion/item/{id}/delete', name: 'accordion_item_delete', methods: ['GET', 'POST'])]
     public function delete(
         Request $request,
         AccordionItem $accordionItem,
@@ -108,6 +104,8 @@ class AccordionItemController extends AbstractController
             $accordionItem,
             'You cannot delete this accordion item.'
         );
+
+        $accordion = $accordionItem->getAccordion();
 
         $form = $this->createForm(DeleteType::class, null);
 
@@ -120,12 +118,15 @@ class AccordionItemController extends AbstractController
 
             $this->addFlash('notice', 'The accordion item was deleted successfully.');
 
-            return $this->redirectToRoute('accordion_item_index');
+            return $this->redirectToRoute('accordion_view', [
+                'id' => $accordion->getId(),
+            ]);
         }
 
-        return $this->render('@OHMediaAccordion/accordion_item/accordion_item_delete.html.twig', [
+        return $this->render('@OHMediaAccordion/accordion/item/accordion_item_delete.html.twig', [
             'form' => $form->createView(),
             'accordion_item' => $accordionItem,
+            'accordion' => $accordion,
         ]);
     }
 }
