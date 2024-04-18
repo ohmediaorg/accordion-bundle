@@ -2,7 +2,6 @@
 
 namespace OHMedia\AccordionBundle\Controller;
 
-use Doctrine\DBAL\Connection;
 use OHMedia\AccordionBundle\Entity\Accordion;
 use OHMedia\AccordionBundle\Entity\AccordionItem;
 use OHMedia\AccordionBundle\Form\AccordionItemType;
@@ -12,7 +11,6 @@ use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\SecurityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -51,7 +49,7 @@ class AccordionItemController extends AbstractController
 
             $redirectRoute = $accordion->isFaq() ? 'faq_question_index' : 'accordion_item_index';
 
-            return $this->redirectToRout e($redirectRoute, [
+            return $this->redirectToRoute($redirectRoute, [
                 'id' => $accordion->getId(),
             ]);
         }

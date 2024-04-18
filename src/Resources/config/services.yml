@@ -7,7 +7,19 @@ services:
         tags: ["container.service_subscriber", "controller.service_arguments"]
         autowire: true
 
+    OHMedia\AccordionBundle\Controller\FaqController:
+        tags: ["container.service_subscriber", "controller.service_arguments"]
+        autowire: true
+
+    OHMedia\AccordionBundle\Controller\FaqQuestionController:
+        tags: ["container.service_subscriber", "controller.service_arguments"]
+        autowire: true
+
     OHMedia\AccordionBundle\Service\AccordionEntityChoice:
+        tags: ["oh_media_security.entity_choice"]
+        autowire: true
+
+    OHMedia\AccordionBundle\Service\FaqEntityChoice:
         tags: ["oh_media_security.entity_choice"]
         autowire: true
 
@@ -27,10 +39,26 @@ services:
         autowire: true
         tags: ["doctrine.repository_service"]
 
+    OHMedia\AccordionBundle\Repository\FaqRepository:
+        autowire: true
+        tags: ["doctrine.repository_service"]
+
+    OHMedia\AccordionBundle\Repository\FaqQuestionRepository:
+        autowire: true
+        tags: ["doctrine.repository_service"]
+
     OHMedia\AccordionBundle\Security\Voter\AccordionVoter:
         autowire: true
         tags: ["security.voter"]
 
     OHMedia\AccordionBundle\Security\Voter\AccordionItemVoter:
+        autowire: true
+        tags: ["security.voter"]
+
+    OHMedia\AccordionBundle\Security\Voter\FaqVoter:
+        autowire: true
+        tags: ["security.voter"]
+
+    OHMedia\AccordionBundle\Security\Voter\FaqQuestionVoter:
         autowire: true
         tags: ["security.voter"]

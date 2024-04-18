@@ -2,18 +2,18 @@
 
 namespace OHMedia\AccordionBundle\Service;
 
-use OHMedia\AccordionBundle\Entity\Accordion;
+use OHMedia\AccordionBundle\Entity\Faq;
 use OHMedia\SecurityBundle\Service\EntityChoiceInterface;
 
 class AccordionEntityChoice implements EntityChoiceInterface
 {
     public function getLabel(): string
     {
-        return 'Accordions';
+        return 'FAQs';
     }
 
     public function getEntities(): array
     {
-        return [Accordion::class];
+        return [Faq::class];
     }
 }

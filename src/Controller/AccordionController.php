@@ -25,6 +25,7 @@ class AccordionController extends AbstractController
 
     public function __construct(
         private AccordionRepository $accordionRepository,
+        private AccordionItemRepository $accordionItemRepository,
         private Paginator $paginator,
         private RequestStack $requestStack
     ) {
@@ -128,10 +129,8 @@ class AccordionController extends AbstractController
 
     #[Route('/accordion/{id}', name: 'accordion_view', methods: ['GET'])]
     #[Route('/faq/{id}', name: 'faq_view', methods: ['GET'])]
-    public function view(
-        Accordion $accordion,
-        AccordionItemRepository $accordionItemRepository
-    ): Response {
+    public function view(Accordion $accordion): Response
+    {
         $noun = $accordion->isFaq() ? 'FAQ' : 'accordion';
 
         $this->denyAccessUnlessGranted(
@@ -159,9 +158,7 @@ class AccordionController extends AbstractController
     #[Route('/faq/{id}/question/reorder', name: 'faq_question_reorder_post', methods: ['POST'])]
     public function reorderPost(
         Connection $connection,
-        Accordion $accordion,
-        AccordionItemRepository $accordionItemRepository,
-        Request $request
+        Accordion $accordion
     ): Response {
         $nouns = $accordion->isFaq() ? 'FAQ questions' : 'accordion items';
 
@@ -170,6 +167,8 @@ class AccordionController extends AbstractController
             $accordion,
             "You cannot reorder the $nouns."
         );
+
+        $request = $this->requestStack->getCurrentRequest();
 
         $csrfToken = $request->request->get(self::CSRF_TOKEN_REORDER);
 
@@ -183,12 +182,12 @@ class AccordionController extends AbstractController
 
         try {
             foreach ($accordionItems as $ordinal => $id) {
-                $accordionItem = $accordionItemRepository->find($id);
+                $accordionItem = $this->accordionItemRepository->find($id);
 
                 if ($accordionItem) {
                     $accordionItem->setOrdinal($ordinal);
 
-                    $accordionItemRepository->save($accordionItem, true);
+                    $this->accordionItemRepository->save($accordionItem, true);
                 }
             }
 

@@ -2,11 +2,11 @@
 
 namespace OHMedia\AccordionBundle\Security\Voter;
 
-use OHMedia\AccordionBundle\Entity\AccordionItem;
+use OHMedia\AccordionBundle\Entity\FaqQuestion;
 use OHMedia\SecurityBundle\Entity\User;
 use OHMedia\SecurityBundle\Security\Voter\AbstractEntityVoter;
 
-class AccordionItemVoter extends AbstractEntityVoter
+class FaqQuestionVoter extends AbstractEntityVoter
 {
     public const CREATE = 'create';
     public const EDIT = 'edit';
@@ -23,20 +23,20 @@ class AccordionItemVoter extends AbstractEntityVoter
 
     protected function getEntityClass(): string
     {
-        return AccordionItem::class;
+        return FaqQuestion::class;
     }
 
-    protected function canCreate(AccordionItem $accordionItem, User $loggedIn): bool
+    protected function canCreate(FaqQuestion $accordionQuestion, User $loggedIn): bool
     {
         return true;
     }
 
-    protected function canEdit(AccordionItem $accordionItem, User $loggedIn): bool
+    protected function canEdit(FaqQuestion $accordionQuestion, User $loggedIn): bool
     {
         return true;
     }
 
-    protected function canDelete(AccordionItem $accordionItem, User $loggedIn): bool
+    protected function canDelete(FaqQuestion $accordionQuestion, User $loggedIn): bool
     {
         return true;
     }

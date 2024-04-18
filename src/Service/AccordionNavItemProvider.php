@@ -12,7 +12,7 @@ class AccordionNavItemProvider extends AbstractNavItemProvider
 {
     public function getNavItem(): ?NavItemInterface
     {
-        if ($this->isGranted(AccordionVoter::INDEX, (new Accordion())->setFaq(false))) {
+        if ($this->isGranted(AccordionVoter::INDEX, new Accordion())) {
             return (new NavLink('Accordions', 'accordion_index'))
                 ->setIcon('arrow-down-square-fill');
         }

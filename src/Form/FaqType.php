@@ -2,25 +2,22 @@
 
 namespace OHMedia\AccordionBundle\Form;
 
-use OHMedia\AccordionBundle\Entity\AccordionItem;
-use OHMedia\WysiwygBundle\Form\Type\WysiwygType;
+use OHMedia\AccordionBundle\Entity\Faq;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class AccordionItemType extends AbstractType
+class FaqType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('header');
-
-        $builder->add('content', WysiwygType::class);
+        $builder->add('name');
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => AccordionItem::class,
+            'data_class' => Faq::class,
         ]);
     }
 }

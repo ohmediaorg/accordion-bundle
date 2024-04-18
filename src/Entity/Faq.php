@@ -5,11 +5,11 @@ namespace OHMedia\AccordionBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use OHMedia\AccordionBundle\Repository\AccordionRepository;
+use OHMedia\AccordionBundle\Repository\FaqRepository;
 use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
 
-#[ORM\Entity(repositoryClass: AccordionRepository::class)]
-class Accordion
+#[ORM\Entity(repositoryClass: FaqRepository::class)]
+class Faq
 {
     use BlameableTrait;
 
@@ -22,14 +22,14 @@ class Accordion
     private ?string $name = null;
 
     /**
-     * @var Collection<int, AccordionItem>
+     * @var Collection<int, FaqQuestion>
      */
-    #[ORM\OneToMany(targetEntity: AccordionItem::class, mappedBy: 'accordion', orphanRemoval: true)]
-    private Collection $items;
+    #[ORM\OneToMany(targetEntity: FaqQuestion::class, mappedBy: 'faq', orphanRemoval: true)]
+    private Collection $questions;
 
     public function __construct()
     {
-        $this->items = new ArrayCollection();
+        $this->questions = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -55,29 +55,29 @@ class Accordion
     }
 
     /**
-     * @return Collection<int, AccordionItem>
+     * @return Collection<int, FaqQuestion>
      */
-    public function getItems(): Collection
+    public function getQuestions(): Collection
     {
-        return $this->items;
+        return $this->questions;
     }
 
-    public function addItem(AccordionItem $item): static
+    public function addQuestion(FaqQuestion $question): static
     {
-        if (!$this->items->contains($item)) {
-            $this->items->add($item);
-            $item->setAccordion($this);
+        if (!$this->questions->contains($question)) {
+            $this->questions->add($question);
+            $question->setFaq($this);
         }
 
         return $this;
     }
 
-    public function removeItem(AccordionItem $item): static
+    public function removeQuestion(FaqQuestion $question): static
     {
-        if ($this->items->removeElement($item)) {
+        if ($this->questions->removeElement($question)) {
             // set the owning side to null (unless already changed)
-            if ($item->getAccordion() === $this) {
-                $item->setAccordion(null);
+            if ($question->getFaq() === $this) {
+                $question->setFaq(null);
             }
         }
 
