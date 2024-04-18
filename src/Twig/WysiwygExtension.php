@@ -105,9 +105,24 @@ class WysiwygExtension extends AbstractWysiwygExtension
 
         $bootstrapAccordion = new BootstrapAccordion();
 
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => [],
+        ];
+
         foreach ($questions as $question) {
             $header = (string) $question->getQuestion();
             $body = $this->wysiwyg->render($question->getAnswer());
+
+            $schema['mainEntity'][] = [
+                '@type' => 'Question',
+                'name' => $header,
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => $body,
+                ],
+            ];
 
             $bootstrapAccordionItem = new BootstrapAccordionItem($header, $body);
 
@@ -116,6 +131,7 @@ class WysiwygExtension extends AbstractWysiwygExtension
 
         return $twig->render('@OHMediaAccordion/faq.html.twig', [
             'accordion' => $bootstrapAccordion,
+            'schema' => $schema,
         ]);
     }
 }
