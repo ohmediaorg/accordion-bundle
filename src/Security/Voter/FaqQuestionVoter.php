@@ -26,17 +26,17 @@ class FaqQuestionVoter extends AbstractEntityVoter
         return FaqQuestion::class;
     }
 
-    protected function canCreate(FaqQuestion $accordionQuestion, User $loggedIn): bool
+    protected function canCreate(FaqQuestion $faqQuestion, User $loggedIn): bool
     {
         return true;
     }
 
-    protected function canEdit(FaqQuestion $accordionQuestion, User $loggedIn): bool
+    protected function canEdit(FaqQuestion $faqQuestion, User $loggedIn): bool
     {
         return true;
     }
 
-    protected function canDelete(FaqQuestion $accordionQuestion, User $loggedIn): bool
+    protected function canDelete(FaqQuestion $faqQuestion, User $loggedIn): bool
     {
         return true;
     }
