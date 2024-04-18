@@ -30,27 +30,27 @@ class FaqVoter extends AbstractEntityVoter
         return Faq::class;
     }
 
-    protected function canIndex(Faq $accordion, User $loggedIn): bool
+    protected function canIndex(Faq $faq, User $loggedIn): bool
     {
         return true;
     }
 
-    protected function canCreate(Faq $accordion, User $loggedIn): bool
+    protected function canCreate(Faq $faq, User $loggedIn): bool
     {
         return true;
     }
 
-    protected function canView(Faq $accordion, User $loggedIn): bool
+    protected function canView(Faq $faq, User $loggedIn): bool
     {
         return true;
     }
 
-    protected function canEdit(Faq $accordion, User $loggedIn): bool
+    protected function canEdit(Faq $faq, User $loggedIn): bool
     {
         return true;
     }
 
-    protected function canDelete(Faq $accordion, User $loggedIn): bool
+    protected function canDelete(Faq $faq, User $loggedIn): bool
     {
         return true;
     }
