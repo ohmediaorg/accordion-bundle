@@ -5,11 +5,10 @@ namespace OHMedia\AccordionBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\AccordionBundle\Repository\AccordionItemRepository;
-use OHMedia\BootstrapBundle\Component\Accordion\AccordionItemInterface;
 use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
 
 #[ORM\Entity(repositoryClass: AccordionItemRepository::class)]
-class AccordionItem implements AccordionItemInterface
+class AccordionItem
 {
     use BlameableTrait;
 
@@ -65,9 +64,9 @@ class AccordionItem implements AccordionItemInterface
         return $this;
     }
 
-    public function getHeader(): string
+    public function getHeader(): ?string
     {
-        return (string) $this->header;
+        return $this->header;
     }
 
     public function setHeader(string $header): static
@@ -87,10 +86,5 @@ class AccordionItem implements AccordionItemInterface
         $this->content = $content;
 
         return $this;
-    }
-
-    public function getBody(): string
-    {
-        return (string) $this->content;
     }
 }

@@ -5,11 +5,10 @@ namespace OHMedia\AccordionBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\AccordionBundle\Repository\FaqQuestionRepository;
-use OHMedia\BootstrapBundle\Component\Accordion\AccordionItemInterface;
 use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
 
 #[ORM\Entity(repositoryClass: FaqQuestionRepository::class)]
-class FaqQuestion implements AccordionItemInterface
+class FaqQuestion
 {
     use BlameableTrait;
 
@@ -87,15 +86,5 @@ class FaqQuestion implements AccordionItemInterface
         $this->answer = $answer;
 
         return $this;
-    }
-
-    public function getHeader(): string
-    {
-        return (string) $this->question;
-    }
-
-    public function getBody(): string
-    {
-        return (string) $this->answer;
     }
 }
