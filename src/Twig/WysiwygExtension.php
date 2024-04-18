@@ -30,7 +30,7 @@ class WysiwygExtension extends AbstractWysiwygExtension
                 'is_safe' => ['html'],
                 'needs_environment' => true,
             ]),
-            new TwigFunction('faq', [$this, 'accordion'], [
+            new TwigFunction('faq', [$this, 'faq'], [
                 'is_safe' => ['html'],
                 'needs_environment' => true,
             ]),
