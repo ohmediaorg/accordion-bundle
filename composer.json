@@ -16,5 +16,10 @@
     },
     "autoload": {
         "psr-4": { "OHMedia\\AccordionBundle\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OHMedia\\AccordionBundle\\Tests\\": "tests/"
+        }
     }
 }
