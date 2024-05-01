@@ -41,9 +41,7 @@
     <div class="card-title card-title-with-count">
       <h1 class="card-title-heading">Items</h1>
       <div class="card-title-count">
-        <span class="badge text-bg-primary">
-          {{ accordion.items|length }}
-        </span>
+        {{ bootstrap_badge_primary(accordion.items|length) }}
       </div>
     </div>
     <h2 class="card-subtitle mb-3 text-body-secondary h5">{{ accordion }}</h2>

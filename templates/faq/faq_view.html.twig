@@ -41,9 +41,7 @@
     <div class="card-title card-title-with-count">
       <h1 class="card-title-heading">Questions</h1>
       <div class="card-title-count">
-        <span class="badge text-bg-primary">
-          {{ faq.questions|length }}
-        </span>
+        {{ bootstrap_badge_primary(faq.questions|length) }}
       </div>
     </div>
     <h2 class="card-subtitle mb-3 text-body-secondary h5">{{ faq }}</h2>
