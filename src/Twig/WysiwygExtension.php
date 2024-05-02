@@ -121,9 +121,12 @@ class WysiwygExtension extends AbstractWysiwygExtension
             $bootstrapAccordion->addItem($bootstrapAccordionItem);
         }
 
-        return $twig->render('@OHMediaAccordion/faq.html.twig', [
+        $rendered = $twig->render('@OHMediaAccordion/faq.html.twig', [
             'accordion' => $bootstrapAccordion,
-            'schema' => $schema,
         ]);
+
+        $rendered .= '<script type="application/ld+json">'.json_encode($schema).'</script>';
+
+        return $rendered;
     }
 }
