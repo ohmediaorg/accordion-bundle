@@ -46,7 +46,7 @@ class WysiwygExtension extends AbstractWysiwygExtension
 
         $this->accordions[$id] = true;
 
-        $accordion = $this->accordionRepository->find($id);
+        $accordion = $id ? $this->accordionRepository->find($id) : null;
 
         if (!$accordion) {
             return '';
