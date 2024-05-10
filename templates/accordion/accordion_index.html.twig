@@ -8,9 +8,13 @@
 ) }}
 {% endblock %}
 
+{% set can_create_accordion = is_granted(attributes.accordion.create, new_accordion) %}
+
+{% set create_accordion_href = path('accordion_create') %}
+
 {% block actions %}
-{% if is_granted(attributes.accordion.create, new_accordion) %}
-<a href="{{ path('accordion_create') }}" class="btn btn-sm btn-primary">
+{% if can_create_accordion %}
+<a href="{{ create_accordion_href }}" class="btn btn-sm btn-primary">
   <i class="bi bi-plus"></i> Add Accordion</a>
 {% endif %}
 {% endblock %}
@@ -25,6 +29,7 @@
       </div>
     </div>
 
+    {% if pagination.count %}
     <table class="table table-striped">
       <thead>
         <tr>
@@ -63,8 +68,6 @@
             {% endif %}
           </td>
         </tr>
-        {% else %}
-        <tr><td colspan="100%">No accordions found.</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -72,6 +75,14 @@
     {{ bootstrap_pagination(pagination) }}
 
     <small>{{ bootstrap_pagination_info(pagination) }}</small>
+    {% else %}
+      <p>
+        No accordions found.
+        {% if can_create_accordion %}
+        <a href="{{ create_accordion_href }}">Click here to add an accordion.</a>
+        {% endif %}
+      </p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

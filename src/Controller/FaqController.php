@@ -45,8 +45,8 @@ class FaqController extends AbstractController
             'You cannot access the list of FAQs.'
         );
 
-        $qb = $this->faqRepository->createQueryBuilder('a');
-        $qb->orderBy('a.name', 'asc');
+        $qb = $this->faqRepository->createQueryBuilder('f');
+        $qb->orderBy('f.name', 'asc');
 
         return $this->render('@OHMediaAccordion/faq/faq_index.html.twig', [
             'pagination' => $this->paginator->paginate($qb, 20),

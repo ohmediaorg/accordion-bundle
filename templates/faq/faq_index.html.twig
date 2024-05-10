@@ -8,9 +8,13 @@
 ) }}
 {% endblock %}
 
+{% set can_create_faq = is_granted(attributes.faq.create, new_faq) %}
+
+{% set create_faq_href = path('faq_create') %}
+
 {% block actions %}
-{% if is_granted(attributes.faq.create, new_faq) %}
-<a href="{{ path('faq_create') }}" class="btn btn-sm btn-primary">
+{% if can_create_faq %}
+<a href="{{ create_faq_href }}" class="btn btn-sm btn-primary">
   <i class="bi bi-plus"></i> Add FAQ</a>
 {% endif %}
 {% endblock %}
@@ -25,6 +29,7 @@
       </div>
     </div>
 
+    {% if pagination.count %}
     <table class="table table-striped">
       <thead>
         <tr>
@@ -63,8 +68,6 @@
             {% endif %}
           </td>
         </tr>
-        {% else %}
-        <tr><td colspan="100%">No FAQs found.</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -72,6 +75,14 @@
     {{ bootstrap_pagination(pagination) }}
 
     <small>{{ bootstrap_pagination_info(pagination) }}</small>
+    {% else %}
+      <p>
+        No FAQs found.
+        {% if can_create_faq %}
+        <a href="{{ create_faq_href }}">Click here to add an FAQ.</a>
+        {% endif %}
+      </p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
