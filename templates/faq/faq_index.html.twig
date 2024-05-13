@@ -50,7 +50,7 @@
           <td>
             {% if is_granted(attributes.faq.view, faq) %}
             <a class="btn btn-sm btn-primary btn-action" href="{{ path('faq_view', {id: faq.id}) }}" title="View">
-              {{ bootstrap_icon('list') }}
+              {{ bootstrap_icon('question-circle-fill') }}
               <span class="visually-hidden">View</span>
             </a>
             {% endif %}

@@ -50,7 +50,7 @@
           <td>
             {% if is_granted(attributes.accordion.view, accordion) %}
             <a class="btn btn-sm btn-primary btn-action" href="{{ path('accordion_view', {id: accordion.id}) }}" title="View">
-              {{ bootstrap_icon('list') }}
+              {{ bootstrap_icon('arrow-down-square-fill') }}
               <span class="visually-hidden">View</span>
             </a>
             {% endif %}
