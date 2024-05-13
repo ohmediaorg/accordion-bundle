@@ -83,7 +83,7 @@ class WysiwygExtension extends AbstractWysiwygExtension
 
         $this->faqs[$id] = true;
 
-        $faq = $this->faqRepository->find($id);
+        $faq = $id ? $this->faqRepository->find($id) : null;
 
         if (!$faq) {
             return '';
