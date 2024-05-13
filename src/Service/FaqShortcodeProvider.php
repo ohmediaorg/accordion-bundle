@@ -14,7 +14,7 @@ class FaqShortcodeProvider extends AbstractShortcodeProvider
 
     public function getTitle(): string
     {
-        return 'Faqs';
+        return 'FAQs';
     }
 
     public function buildShortcodes(): void
