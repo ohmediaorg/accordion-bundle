@@ -15,7 +15,7 @@
 {% block actions %}
 {% if can_create_accordion %}
 <a href="{{ create_accordion_href }}" class="btn btn-sm btn-primary">
-  <i class="bi bi-plus"></i> Add Accordion</a>
+  {{ bootstrap_icon('plus') }} Add Accordion</a>
 {% endif %}
 {% endblock %}
 

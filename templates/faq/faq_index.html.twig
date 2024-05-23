@@ -15,7 +15,7 @@
 {% block actions %}
 {% if can_create_faq %}
 <a href="{{ create_faq_href }}" class="btn btn-sm btn-primary">
-  <i class="bi bi-plus"></i> Add FAQ</a>
+  {{ bootstrap_icon('plus') }} Add FAQ</a>
 {% endif %}
 {% endblock %}
 
