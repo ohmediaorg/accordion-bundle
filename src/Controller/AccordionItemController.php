@@ -18,11 +18,14 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Admin]
 class AccordionItemController extends AbstractController
 {
+    public function __construct(private AccordionItemRepository $accordionItemRepository)
+    {
+    }
+
     #[Route('/accordion/{id}/item/create', name: 'accordion_item_create', methods: ['GET', 'POST'])]
     public function create(
         Request $request,
         Accordion $accordion,
-        AccordionItemRepository $accordionItemRepository
     ): Response {
         $accordionItem = new AccordionItem();
         $accordionItem->setAccordion($accordion);
@@ -40,7 +43,7 @@ class AccordionItemController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $accordionItemRepository->save($accordionItem, true);
+            $this->accordionItemRepository->save($accordionItem, true);
 
             $this->addFlash('notice', 'The item was created successfully.');
 
@@ -60,7 +63,6 @@ class AccordionItemController extends AbstractController
     public function edit(
         Request $request,
         AccordionItem $accordionItem,
-        AccordionItemRepository $accordionItemRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             AccordionItemVoter::EDIT,
@@ -77,7 +79,7 @@ class AccordionItemController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $accordionItemRepository->save($accordionItem, true);
+            $this->accordionItemRepository->save($accordionItem, true);
 
             $this->addFlash('notice', 'The accordion item was updated successfully.');
 
@@ -97,7 +99,6 @@ class AccordionItemController extends AbstractController
     public function delete(
         Request $request,
         AccordionItem $accordionItem,
-        AccordionItemRepository $accordionItemRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             AccordionItemVoter::DELETE,
@@ -114,7 +115,7 @@ class AccordionItemController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $accordionItemRepository->remove($accordionItem, true);
+            $this->accordionItemRepository->remove($accordionItem, true);
 
             $this->addFlash('notice', 'The accordion item was deleted successfully.');
 

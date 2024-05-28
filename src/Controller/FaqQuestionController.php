@@ -18,11 +18,14 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Admin]
 class FaqQuestionController extends AbstractController
 {
+    public function __construct(private FaqQuestionRepository $faqQuestionRepository)
+    {
+    }
+
     #[Route('/faq/{id}/question/create', name: 'faq_question_create', methods: ['GET', 'POST'])]
     public function create(
         Request $request,
         Faq $faq,
-        FaqQuestionRepository $faqQuestionRepository
     ): Response {
         $faqQuestion = new FaqQuestion();
         $faqQuestion->setFaq($faq);
@@ -40,7 +43,7 @@ class FaqQuestionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $faqQuestionRepository->save($faqQuestion, true);
+            $this->faqQuestionRepository->save($faqQuestion, true);
 
             $this->addFlash('notice', 'The question was created successfully.');
 
@@ -60,7 +63,6 @@ class FaqQuestionController extends AbstractController
     public function edit(
         Request $request,
         FaqQuestion $faqQuestion,
-        FaqQuestionRepository $faqQuestionRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             FaqQuestionVoter::EDIT,
@@ -77,7 +79,7 @@ class FaqQuestionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $faqQuestionRepository->save($faqQuestion, true);
+            $this->faqQuestionRepository->save($faqQuestion, true);
 
             $this->addFlash('notice', 'The question was updated successfully.');
 
@@ -97,7 +99,6 @@ class FaqQuestionController extends AbstractController
     public function delete(
         Request $request,
         FaqQuestion $faqQuestion,
-        FaqQuestionRepository $faqQuestionRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             FaqQuestionVoter::DELETE,
@@ -114,7 +115,7 @@ class FaqQuestionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $faqQuestionRepository->remove($faqQuestion, true);
+            $this->faqQuestionRepository->remove($faqQuestion, true);
 
             $this->addFlash('notice', 'The question was deleted successfully.');
 
