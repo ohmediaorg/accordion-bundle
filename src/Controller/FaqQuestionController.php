@@ -42,14 +42,18 @@ class FaqQuestionController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->faqQuestionRepository->save($faqQuestion, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->faqQuestionRepository->save($faqQuestion, true);
 
-            $this->addFlash('notice', 'The question was created successfully.');
+                $this->addFlash('notice', 'The question was created successfully.');
 
-            return $this->redirectToRoute('faq_view', [
-                'id' => $faq->getId(),
-            ]);
+                return $this->redirectToRoute('faq_view', [
+                    'id' => $faq->getId(),
+                ]);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         return $this->render('@OHMediaAccordion/faq/question/faq_question_create.html.twig', [
@@ -78,14 +82,18 @@ class FaqQuestionController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->faqQuestionRepository->save($faqQuestion, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->faqQuestionRepository->save($faqQuestion, true);
 
-            $this->addFlash('notice', 'The question was updated successfully.');
+                $this->addFlash('notice', 'The question was updated successfully.');
 
-            return $this->redirectToRoute('faq_view', [
-                'id' => $faq->getId(),
-            ]);
+                return $this->redirectToRoute('faq_view', [
+                    'id' => $faq->getId(),
+                ]);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         return $this->render('@OHMediaAccordion/faq/question/faq_question_edit.html.twig', [
@@ -114,14 +122,18 @@ class FaqQuestionController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->faqQuestionRepository->remove($faqQuestion, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->faqQuestionRepository->remove($faqQuestion, true);
 
-            $this->addFlash('notice', 'The question was deleted successfully.');
+                $this->addFlash('notice', 'The question was deleted successfully.');
 
-            return $this->redirectToRoute('faq_view', [
-                'id' => $faq->getId(),
-            ]);
+                return $this->redirectToRoute('faq_view', [
+                    'id' => $faq->getId(),
+                ]);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         return $this->render('@OHMediaAccordion/faq/question/faq_question_delete.html.twig', [

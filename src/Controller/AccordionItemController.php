@@ -42,14 +42,18 @@ class AccordionItemController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->accordionItemRepository->save($accordionItem, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->accordionItemRepository->save($accordionItem, true);
 
-            $this->addFlash('notice', 'The item was created successfully.');
+                $this->addFlash('notice', 'The item was created successfully.');
 
-            return $this->redirectToRoute('accordion_view', [
-                'id' => $accordion->getId(),
-            ]);
+                return $this->redirectToRoute('accordion_view', [
+                    'id' => $accordion->getId(),
+                ]);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         return $this->render('@OHMediaAccordion/accordion/item/accordion_item_create.html.twig', [
@@ -78,14 +82,18 @@ class AccordionItemController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->accordionItemRepository->save($accordionItem, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->accordionItemRepository->save($accordionItem, true);
 
-            $this->addFlash('notice', 'The accordion item was updated successfully.');
+                $this->addFlash('notice', 'The accordion item was updated successfully.');
 
-            return $this->redirectToRoute('accordion_view', [
-                'id' => $accordion->getId(),
-            ]);
+                return $this->redirectToRoute('accordion_view', [
+                    'id' => $accordion->getId(),
+                ]);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         return $this->render('@OHMediaAccordion/accordion/item/accordion_item_edit.html.twig', [
@@ -114,14 +122,18 @@ class AccordionItemController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->accordionItemRepository->remove($accordionItem, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->accordionItemRepository->remove($accordionItem, true);
 
-            $this->addFlash('notice', 'The accordion item was deleted successfully.');
+                $this->addFlash('notice', 'The accordion item was deleted successfully.');
 
-            return $this->redirectToRoute('accordion_view', [
-                'id' => $accordion->getId(),
-            ]);
+                return $this->redirectToRoute('accordion_view', [
+                    'id' => $accordion->getId(),
+                ]);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         return $this->render('@OHMediaAccordion/accordion/item/accordion_item_delete.html.twig', [
