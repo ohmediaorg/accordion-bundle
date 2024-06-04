@@ -45,7 +45,7 @@
         <tr>
           <td>{{ faq.name }}</td>
           <td>{{ faq.questions|length }}</td>
-          <td><code>{{ '{{ faq(' ~ faq.id ~ ') }}' }}</code></td>
+          <td><code>{{ '{{faq(' ~ faq.id ~ ')}}' }}</code></td>
           <td>{{ faq.updatedAt|datetime }}</td>
           <td>
             {% if is_granted(attributes.faq.view, faq) %}
