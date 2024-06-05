@@ -45,7 +45,7 @@
         <tr>
           <td>{{ accordion.name }}</td>
           <td>{{ accordion.items|length }}</td>
-          <td><code>{{ '{{accordion(' ~ accordion.id ~ ')}}' }}</code></td>
+          <td>{{ shortcode('accordion(' ~ accordion.id ~ ')') }}</td>
           <td>{{ accordion.updatedAt|datetime }}</td>
           <td>
             {% if is_granted(attributes.accordion.view, accordion) %}
