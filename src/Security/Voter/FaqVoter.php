@@ -57,7 +57,7 @@ class FaqVoter extends AbstractEntityVoter
 
     protected function canDelete(Faq $faq, User $loggedIn): bool
     {
-        $shortcode = sprintf('{{ faq(%d) }}', $faq->getId());
+        $shortcode = sprintf('faq(%d)', $faq->getId());
 
         return !$this->wysiwyg->shortcodesInUse($shortcode);
     }

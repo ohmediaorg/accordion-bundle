@@ -57,7 +57,7 @@ class AccordionVoter extends AbstractEntityVoter
 
     protected function canDelete(Accordion $accordion, User $loggedIn): bool
     {
-        $shortcode = sprintf('{{ accordion(%d) }}', $accordion->getId());
+        $shortcode = sprintf('accordion(%d)', $accordion->getId());
 
         return !$this->wysiwyg->shortcodesInUse($shortcode);
     }
