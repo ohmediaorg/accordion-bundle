@@ -8,7 +8,7 @@ use OHMedia\AccordionBundle\Form\FaqQuestionType;
 use OHMedia\AccordionBundle\Repository\FaqQuestionRepository;
 use OHMedia\AccordionBundle\Security\Voter\FaqQuestionVoter;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
-use OHMedia\SecurityBundle\Form\DeleteType;
+use OHMedia\UtilityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;

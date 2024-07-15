@@ -8,7 +8,7 @@ use OHMedia\AccordionBundle\Form\AccordionItemType;
 use OHMedia\AccordionBundle\Repository\AccordionItemRepository;
 use OHMedia\AccordionBundle\Security\Voter\AccordionItemVoter;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
-use OHMedia\SecurityBundle\Form\DeleteType;
+use OHMedia\UtilityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
