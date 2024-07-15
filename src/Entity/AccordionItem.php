@@ -5,12 +5,12 @@ namespace OHMedia\AccordionBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\AccordionBundle\Repository\AccordionItemRepository;
-use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
+use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
 
 #[ORM\Entity(repositoryClass: AccordionItemRepository::class)]
 class AccordionItem
 {
-    use BlameableTrait;
+    use BlameableEntityTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
