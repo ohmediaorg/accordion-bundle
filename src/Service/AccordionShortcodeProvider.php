@@ -3,8 +3,8 @@
 namespace OHMedia\AccordionBundle\Service;
 
 use OHMedia\AccordionBundle\Repository\AccordionRepository;
-use OHMedia\BackendBundle\Shortcodes\AbstractShortcodeProvider;
-use OHMedia\BackendBundle\Shortcodes\Shortcode;
+use OHMedia\WysiwygBundle\Shortcodes\AbstractShortcodeProvider;
+use OHMedia\WysiwygBundle\Shortcodes\Shortcode;
 
 class AccordionShortcodeProvider extends AbstractShortcodeProvider
 {
