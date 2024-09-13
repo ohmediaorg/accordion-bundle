@@ -6,6 +6,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\AccordionBundle\Repository\AccordionItemRepository;
 use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AccordionItemRepository::class)]
 class AccordionItem
@@ -25,9 +26,11 @@ class AccordionItem
     private ?Accordion $accordion = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $header = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank]
     private ?string $content = null;
 
     public function __toString(): string
@@ -69,7 +72,7 @@ class AccordionItem
         return $this->header;
     }
 
-    public function setHeader(string $header): static
+    public function setHeader(?string $header): static
     {
         $this->header = $header;
 
@@ -81,7 +84,7 @@ class AccordionItem
         return $this->content;
     }
 
-    public function setContent(string $content): static
+    public function setContent(?string $content): static
     {
         $this->content = $content;
 

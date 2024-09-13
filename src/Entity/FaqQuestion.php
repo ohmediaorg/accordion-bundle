@@ -6,6 +6,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\AccordionBundle\Repository\FaqQuestionRepository;
 use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FaqQuestionRepository::class)]
 class FaqQuestion
@@ -25,9 +26,11 @@ class FaqQuestion
     private ?Faq $faq = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $question = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank]
     private ?string $answer = null;
 
     public function __toString(): string
@@ -69,7 +72,7 @@ class FaqQuestion
         return $this->question;
     }
 
-    public function setQuestion(string $question): static
+    public function setQuestion(?string $question): static
     {
         $this->question = $question;
 
@@ -81,7 +84,7 @@ class FaqQuestion
         return $this->answer;
     }
 
-    public function setAnswer(string $answer): static
+    public function setAnswer(?string $answer): static
     {
         $this->answer = $answer;
 
