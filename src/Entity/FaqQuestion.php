@@ -27,6 +27,7 @@ class FaqQuestion
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private ?string $question = null;
 
     #[ORM\Column(type: Types::TEXT)]

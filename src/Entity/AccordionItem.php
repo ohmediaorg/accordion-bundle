@@ -27,6 +27,7 @@ class AccordionItem
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private ?string $header = null;
 
     #[ORM\Column(type: Types::TEXT)]
