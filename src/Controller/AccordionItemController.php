@@ -9,6 +9,7 @@ use OHMedia\AccordionBundle\Repository\AccordionItemRepository;
 use OHMedia\AccordionBundle\Security\Voter\AccordionItemVoter;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\UtilityBundle\Form\DeleteType;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +26,7 @@ class AccordionItemController extends AbstractController
     #[Route('/accordion/{id}/item/create', name: 'accordion_item_create', methods: ['GET', 'POST'])]
     public function create(
         Request $request,
-        Accordion $accordion,
+        #[MapEntity(id: 'id')] Accordion $accordion,
     ): Response {
         $accordionItem = new AccordionItem();
         $accordionItem->setAccordion($accordion);
@@ -66,7 +67,7 @@ class AccordionItemController extends AbstractController
     #[Route('/accordion/item/{id}/edit', name: 'accordion_item_edit', methods: ['GET', 'POST'])]
     public function edit(
         Request $request,
-        AccordionItem $accordionItem,
+        #[MapEntity(id: 'id')] AccordionItem $accordionItem,
     ): Response {
         $this->denyAccessUnlessGranted(
             AccordionItemVoter::EDIT,
@@ -106,7 +107,7 @@ class AccordionItemController extends AbstractController
     #[Route('/accordion/item/{id}/delete', name: 'accordion_item_delete', methods: ['GET', 'POST'])]
     public function delete(
         Request $request,
-        AccordionItem $accordionItem,
+        #[MapEntity(id: 'id')] AccordionItem $accordionItem,
     ): Response {
         $this->denyAccessUnlessGranted(
             AccordionItemVoter::DELETE,

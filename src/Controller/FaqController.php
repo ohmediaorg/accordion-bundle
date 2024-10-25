@@ -13,6 +13,7 @@ use OHMedia\AccordionBundle\Security\Voter\FaqVoter;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\BootstrapBundle\Service\Paginator;
 use OHMedia\UtilityBundle\Form\DeleteType;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -93,8 +94,9 @@ class FaqController extends AbstractController
     }
 
     #[Route('/faq/{id}', name: 'faq_view', methods: ['GET'])]
-    public function view(Faq $faq): Response
-    {
+    public function view(
+        #[MapEntity(id: 'id')] Faq $faq,
+    ): Response {
         $this->denyAccessUnlessGranted(
             FaqVoter::VIEW,
             $faq,
@@ -113,8 +115,9 @@ class FaqController extends AbstractController
     }
 
     #[Route('/faq/{id}/questions/reorder', name: 'faq_question_reorder_post', methods: ['POST'])]
-    public function reorderPost(Faq $faq): Response
-    {
+    public function reorderPost(
+        #[MapEntity(id: 'id')] Faq $faq,
+    ): Response {
         $this->denyAccessUnlessGranted(
             FaqVoter::INDEX,
             $faq,
@@ -155,8 +158,9 @@ class FaqController extends AbstractController
     }
 
     #[Route('/faq/{id}/edit', name: 'faq_edit', methods: ['GET', 'POST'])]
-    public function edit(Faq $faq): Response
-    {
+    public function edit(
+        #[MapEntity(id: 'id')] Faq $faq,
+    ): Response {
         $this->denyAccessUnlessGranted(
             FaqVoter::EDIT,
             $faq,
@@ -190,8 +194,9 @@ class FaqController extends AbstractController
     }
 
     #[Route('/faq/{id}/delete', name: 'faq_delete', methods: ['GET', 'POST'])]
-    public function delete(Faq $faq): Response
-    {
+    public function delete(
+        #[MapEntity(id: 'id')] Faq $faq,
+    ): Response {
         $this->denyAccessUnlessGranted(
             FaqVoter::DELETE,
             $faq,

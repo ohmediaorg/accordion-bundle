@@ -13,6 +13,7 @@ use OHMedia\AccordionBundle\Security\Voter\AccordionVoter;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\BootstrapBundle\Service\Paginator;
 use OHMedia\UtilityBundle\Form\DeleteType;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -93,8 +94,9 @@ class AccordionController extends AbstractController
     }
 
     #[Route('/accordion/{id}', name: 'accordion_view', methods: ['GET'])]
-    public function view(Accordion $accordion): Response
-    {
+    public function view(
+        #[MapEntity(id: 'id')] Accordion $accordion,
+    ): Response {
         $this->denyAccessUnlessGranted(
             AccordionVoter::VIEW,
             $accordion,
@@ -113,8 +115,9 @@ class AccordionController extends AbstractController
     }
 
     #[Route('/accordion/{id}/items/reorder', name: 'accordion_item_reorder_post', methods: ['POST'])]
-    public function reorderPost(Accordion $accordion): Response
-    {
+    public function reorderPost(
+        #[MapEntity(id: 'id')] Accordion $accordion,
+    ): Response {
         $this->denyAccessUnlessGranted(
             AccordionVoter::INDEX,
             $accordion,
@@ -155,8 +158,9 @@ class AccordionController extends AbstractController
     }
 
     #[Route('/accordion/{id}/edit', name: 'accordion_edit', methods: ['GET', 'POST'])]
-    public function edit(Accordion $accordion): Response
-    {
+    public function edit(
+        #[MapEntity(id: 'id')] Accordion $accordion,
+    ): Response {
         $this->denyAccessUnlessGranted(
             AccordionVoter::EDIT,
             $accordion,
@@ -190,8 +194,9 @@ class AccordionController extends AbstractController
     }
 
     #[Route('/accordion/{id}/delete', name: 'accordion_delete', methods: ['GET', 'POST'])]
-    public function delete(Accordion $accordion): Response
-    {
+    public function delete(
+        #[MapEntity(id: 'id')] Accordion $accordion,
+    ): Response {
         $this->denyAccessUnlessGranted(
             AccordionVoter::DELETE,
             $accordion,

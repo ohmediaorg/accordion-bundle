@@ -9,6 +9,7 @@ use OHMedia\AccordionBundle\Repository\FaqQuestionRepository;
 use OHMedia\AccordionBundle\Security\Voter\FaqQuestionVoter;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\UtilityBundle\Form\DeleteType;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +26,7 @@ class FaqQuestionController extends AbstractController
     #[Route('/faq/{id}/question/create', name: 'faq_question_create', methods: ['GET', 'POST'])]
     public function create(
         Request $request,
-        Faq $faq,
+        #[MapEntity(id: 'id')] Faq $faq,
     ): Response {
         $faqQuestion = new FaqQuestion();
         $faqQuestion->setFaq($faq);
@@ -66,7 +67,7 @@ class FaqQuestionController extends AbstractController
     #[Route('/faq/question/{id}/edit', name: 'faq_question_edit', methods: ['GET', 'POST'])]
     public function edit(
         Request $request,
-        FaqQuestion $faqQuestion,
+        #[MapEntity(id: 'id')] FaqQuestion $faqQuestion,
     ): Response {
         $this->denyAccessUnlessGranted(
             FaqQuestionVoter::EDIT,
@@ -106,7 +107,7 @@ class FaqQuestionController extends AbstractController
     #[Route('/faq/question/{id}/delete', name: 'faq_question_delete', methods: ['GET', 'POST'])]
     public function delete(
         Request $request,
-        FaqQuestion $faqQuestion,
+        #[MapEntity(id: 'id')] FaqQuestion $faqQuestion,
     ): Response {
         $this->denyAccessUnlessGranted(
             FaqQuestionVoter::DELETE,
