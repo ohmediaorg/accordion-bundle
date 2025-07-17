@@ -39,7 +39,7 @@ class FaqQuestionController extends AbstractController
 
         $form = $this->createForm(FaqQuestionType::class, $faqQuestion);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -79,7 +79,7 @@ class FaqQuestionController extends AbstractController
 
         $form = $this->createForm(FaqQuestionType::class, $faqQuestion);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 

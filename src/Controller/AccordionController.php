@@ -69,7 +69,7 @@ class AccordionController extends AbstractController
 
         $form = $this->createForm(AccordionType::class, $accordion);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($this->requestStack->getCurrentRequest());
 
@@ -169,7 +169,7 @@ class AccordionController extends AbstractController
 
         $form = $this->createForm(AccordionType::class, $accordion);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($this->requestStack->getCurrentRequest());
 
