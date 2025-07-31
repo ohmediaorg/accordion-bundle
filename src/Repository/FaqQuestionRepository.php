@@ -3,8 +3,7 @@
 namespace OHMedia\AccordionBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Query\Parameter;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use OHMedia\AccordionBundle\Entity\FaqQuestion;
 use OHMedia\WysiwygBundle\Repository\WysiwygRepositoryInterface;
@@ -40,21 +39,25 @@ class FaqQuestionRepository extends ServiceEntityRepository implements WysiwygRe
         }
     }
 
-    public function containsWysiwygShortcodes(string ...$shortcodes): bool
+    public function getShortcodeQueryBuilder(string $shortcode): QueryBuilder
     {
-        $ors = [];
-        $params = new ArrayCollection();
-
-        foreach ($shortcodes as $i => $shortcode) {
-            $ors[] = 'fq.answer LIKE :shortcode_'.$i;
-            $params[] = new Parameter('shortcode_'.$i, '%'.$shortcode.'%');
-        }
-
         return $this->createQueryBuilder('fq')
-            ->select('COUNT(fq)')
-            ->where(implode(' OR ', $ors))
-            ->setParameters($params)
-            ->getQuery()
-            ->getSingleScalarResult() > 0;
+            ->where('fq.answer LIKE :shortcode')
+            ->setParameter('shortcode', '%'.$shortcode.'%');
+    }
+
+    public function getEntityRoute(): string
+    {
+        return 'faq_question_edit';
+    }
+
+    public function getEntityRouteParams(mixed $entity): array
+    {
+        return ['id' => $entity->getId()];
+    }
+
+    public function getEntityName(): string
+    {
+        return 'FAQ Question';
     }
 }
