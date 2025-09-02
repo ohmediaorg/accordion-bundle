@@ -46,18 +46,27 @@ class AccordionItemRepository extends ServiceEntityRepository implements Wysiwyg
             ->setParameter('shortcode', '%'.$shortcode.'%');
     }
 
-    public function getEntityRoute(): string
+    public function getShortcodeRoute(): string
     {
         return 'accordion_item_edit';
     }
 
-    public function getEntityRouteParams(mixed $entity): array
+    public function getShortcodeRouteParams(mixed $entity): array
     {
         return ['id' => $entity->getId()];
     }
 
-    public function getEntityName(): string
+    public function getShortcodeHeading(): string
     {
-        return 'Accordion Item';
+        return 'Accordions';
+    }
+
+    public function getShortcodeLinkText(mixed $entity): string
+    {
+        return sprintf(
+            '%s - Accordion Item (ID:%s)',
+            (string) $entity->getAccordion(),
+            $entity->getId(),
+        );
     }
 }

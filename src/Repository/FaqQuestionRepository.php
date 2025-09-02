@@ -46,18 +46,27 @@ class FaqQuestionRepository extends ServiceEntityRepository implements WysiwygRe
             ->setParameter('shortcode', '%'.$shortcode.'%');
     }
 
-    public function getEntityRoute(): string
+    public function getShortcodeRoute(): string
     {
         return 'faq_question_edit';
     }
 
-    public function getEntityRouteParams(mixed $entity): array
+    public function getShortcodeRouteParams(mixed $entity): array
     {
         return ['id' => $entity->getId()];
     }
 
-    public function getEntityName(): string
+    public function getShortcodeHeading(): string
     {
-        return 'FAQ Question';
+        return 'FAQs';
+    }
+
+    public function getShortcodeLinkText(mixed $entity): string
+    {
+        return sprintf(
+            '%s - FAQ Question (ID:%s)',
+            (string) $entity->getFaq(),
+            $entity->getId(),
+        );
     }
 }
