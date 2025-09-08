@@ -3,8 +3,7 @@
 namespace OHMedia\AccordionBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Query\Parameter;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use OHMedia\AccordionBundle\Entity\AccordionItem;
 use OHMedia\WysiwygBundle\Repository\WysiwygRepositoryInterface;
@@ -40,21 +39,34 @@ class AccordionItemRepository extends ServiceEntityRepository implements Wysiwyg
         }
     }
 
-    public function containsWysiwygShortcodes(string ...$shortcodes): bool
+    public function getShortcodeQueryBuilder(string $shortcode): QueryBuilder
     {
-        $ors = [];
-        $params = new ArrayCollection();
-
-        foreach ($shortcodes as $i => $shortcode) {
-            $ors[] = 'ai.content LIKE :shortcode_'.$i;
-            $params[] = new Parameter('shortcode_'.$i, '%'.$shortcode.'%');
-        }
-
         return $this->createQueryBuilder('ai')
-            ->select('COUNT(ai)')
-            ->where(implode(' OR ', $ors))
-            ->setParameters($params)
-            ->getQuery()
-            ->getSingleScalarResult() > 0;
+            ->where('ai.content LIKE :shortcode')
+            ->setParameter('shortcode', '%'.$shortcode.'%');
+    }
+
+    public function getShortcodeRoute(): string
+    {
+        return 'accordion_item_edit';
+    }
+
+    public function getShortcodeRouteParams(mixed $entity): array
+    {
+        return ['id' => $entity->getId()];
+    }
+
+    public function getShortcodeHeading(): string
+    {
+        return 'Accordions';
+    }
+
+    public function getShortcodeLinkText(mixed $entity): string
+    {
+        return sprintf(
+            '%s - Accordion Item (ID:%s)',
+            (string) $entity->getAccordion(),
+            $entity->getId(),
+        );
     }
 }
