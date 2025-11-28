@@ -3,9 +3,9 @@
 {% block meta_title %}Accordions{% endblock %}
 
 {% block breadcrumbs %}
-{{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb(bootstrap_icon('menu-button-wide') ~ ' Accordions', 'accordion_index'),
-) }}
+  {{ bootstrap_breadcrumbs(
+    bootstrap_breadcrumb(bootstrap_icon('menu-button-wide') ~ ' Accordions', 'accordion_index'),
+  ) }}
 {% endblock %}
 
 {% set can_create_accordion = is_granted(attributes.accordion.create, new_accordion) %}
@@ -13,76 +13,98 @@
 {% set create_accordion_href = path('accordion_create') %}
 
 {% block actions %}
-{% if can_create_accordion %}
-<a href="{{ create_accordion_href }}" class="btn btn-sm btn-primary">
-  {{ bootstrap_icon('plus-lg') }} Add Accordion</a>
-{% endif %}
+  {% if can_create_accordion %}
+    <a href="{{ create_accordion_href }}" class="btn btn-primary">
+      {{ bootstrap_icon('plus-lg') }}
+      Add Accordion
+    </a>
+  {% endif %}
 {% endblock %}
 
 {% block main %}
-<div class="card">
-  <div class="card-body">
-    <div class="card-title card-title-with-count">
-      <h1 class="card-title-heading">Accordions</h1>
-      <div class="card-title-count">
-        {{ bootstrap_badge_primary(pagination.count) }}
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title card-title-with-count">
+        <h1 class="card-title-heading">Accordions</h1>
+        <div class="card-title-count">
+          {{ bootstrap_badge_primary(pagination.count) }}
+        </div>
       </div>
+
+      {% if pagination.count %}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Items</th>
+              <th>Shortcode</th>
+              <th>Last Updated</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for accordion in pagination.results %}
+              {{ _self.table_row(accordion, attributes) }}
+            {% endfor %}
+          </tbody>
+        </table>
+
+        {{ bootstrap_pagination(pagination) }}
+
+        <small>{{ bootstrap_pagination_info(pagination) }}</small>
+      {% else %}
+        <p>
+          No accordions found.
+          {% if can_create_accordion %}
+          <a href="{{ create_accordion_href }}">Click here to add an accordion.</a>
+          {% endif %}
+        </p>
+      {% endif %}
     </div>
-
-    {% if pagination.count %}
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Items</th>
-          <th>Shortcode</th>
-          <th>Last Updated</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for accordion in pagination.results %}
-        <tr>
-          <td>{{ accordion.name }}</td>
-          <td>{{ accordion.items|length }}</td>
-          <td>{{ shortcode('accordion(' ~ accordion.id ~ ')') }}</td>
-          <td>{{ accordion.updatedAt|datetime }}</td>
-          <td>
-            {% if is_granted(attributes.accordion.view, accordion) %}
-            <a class="btn btn-sm btn-primary btn-action" href="{{ path('accordion_view', {id: accordion.id}) }}" title="View">
-              {{ bootstrap_icon('menu-button-wide') }}
-              <span class="visually-hidden">View</span>
-            </a>
-            {% endif %}
-            {% if is_granted(attributes.accordion.edit, accordion) %}
-            <a class="btn btn-sm btn-primary btn-action" href="{{ path('accordion_edit', {id: accordion.id}) }}" title="Edit">
-              {{ bootstrap_icon('pencil') }}
-              <span class="visually-hidden">Edit</span>
-            </a>
-            {% endif %}
-            {% if is_granted(attributes.accordion.delete, accordion) %}
-            <a class="btn btn-sm btn-danger btn-action" href="{{ path('accordion_delete', {id: accordion.id}) }}" title="Delete" data-confirm="Are you sure you want to delete this accordion? Clicking OK will take you to a verification step to delete this entry.">
-              {{ bootstrap_icon('trash') }}
-              <span class="visually-hidden">Delete</span>
-            </a>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-    {{ bootstrap_pagination(pagination) }}
-
-    <small>{{ bootstrap_pagination_info(pagination) }}</small>
-    {% else %}
-      <p>
-        No accordions found.
-        {% if can_create_accordion %}
-        <a href="{{ create_accordion_href }}">Click here to add an accordion.</a>
-        {% endif %}
-      </p>
-    {% endif %}
   </div>
-</div>
 {% endblock %}
+
+{% macro table_row(accordion, attributes) %}
+  {% set row_actions = [] %}
+
+  {% if is_granted(attributes.accordion.view, accordion) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'accordion_view',
+      route_params: {id: accordion.id},
+      color: 'outline-secondary',
+      icon: 'eye',
+      text: 'View Accordion',
+    }]) %}
+  {% endif %}
+  {% if is_granted(attributes.accordion.edit, accordion) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'accordion_edit',
+      route_params: {id: accordion.id},
+      color: 'secondary',
+      icon: 'pen',
+      text: 'Edit Accordion',
+    }]) %}
+  {% endif %}
+  {% if is_granted(attributes.accordion.delete, accordion) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'accordion_delete',
+      route_params: {id: accordion.id},
+      color: 'danger',
+      icon: 'trash',
+      text: 'Delete Accordion',
+      confirm: 'Are you sure you want to delete this accordion? Clicking OK will take you to a verification step to delete this entry.',
+    }]) %}
+  {% endif %}
+
+  <tr>
+    <td>{{ accordion.name }}</td>
+    <td>{{ accordion.items|length }}</td>
+    <td>{{ shortcode('accordion(' ~ accordion.id ~ ')') }}</td>
+    <td>{{ accordion.updatedAt|datetime }}</td>
+    <td>
+      {% include '@OHMediaBackend/widget/row_actions.html.twig' with {
+        row_actions: row_actions,
+      } only %}
+    </td>
+  </tr>
+{% endmacro %}
