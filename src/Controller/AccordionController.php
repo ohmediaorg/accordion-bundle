@@ -10,12 +10,14 @@ use OHMedia\AccordionBundle\Repository\AccordionItemRepository;
 use OHMedia\AccordionBundle\Repository\AccordionRepository;
 use OHMedia\AccordionBundle\Security\Voter\AccordionItemVoter;
 use OHMedia\AccordionBundle\Security\Voter\AccordionVoter;
+use OHMedia\BackendBundle\Form\MultiSaveType;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\BootstrapBundle\Service\Paginator;
 use OHMedia\UtilityBundle\Form\DeleteType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,7 +71,7 @@ class AccordionController extends AbstractController
 
         $form = $this->createForm(AccordionType::class, $accordion);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class);
 
         $form->handleRequest($this->requestStack->getCurrentRequest());
 
@@ -79,9 +81,7 @@ class AccordionController extends AbstractController
 
                 $this->addFlash('notice', 'The accordion was created successfully.');
 
-                return $this->redirectToRoute('accordion_view', [
-                    'id' => $accordion->getId(),
-                ]);
+                return $this->redirectForm($accordion, $form);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -169,7 +169,7 @@ class AccordionController extends AbstractController
 
         $form = $this->createForm(AccordionType::class, $accordion);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class);
 
         $form->handleRequest($this->requestStack->getCurrentRequest());
 
@@ -179,9 +179,7 @@ class AccordionController extends AbstractController
 
                 $this->addFlash('notice', 'The accordion was updated successfully.');
 
-                return $this->redirectToRoute('accordion_view', [
-                    'id' => $accordion->getId(),
-                ]);
+                return $this->redirectForm($accordion, $form);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -191,6 +189,23 @@ class AccordionController extends AbstractController
             'form' => $form->createView(),
             'accordion' => $accordion,
         ]);
+    }
+
+    private function redirectForm(Accordion $accordion, FormInterface $form): Response
+    {
+        $clickedButtonName = $form->getClickedButton()->getName() ?? null;
+
+        if ('keep_editing' === $clickedButtonName) {
+            return $this->redirectToRoute('accordion_edit', [
+                'id' => $accordion->getId(),
+            ]);
+        } elseif ('add_another' === $clickedButtonName) {
+            return $this->redirectToRoute('accordion_create');
+        } else {
+            return $this->redirectToRoute('accordion_view', [
+                'id' => $accordion->getId(),
+            ]);
+        }
     }
 
     #[Route('/accordion/{id}/delete', name: 'accordion_delete', methods: ['GET', 'POST'])]
