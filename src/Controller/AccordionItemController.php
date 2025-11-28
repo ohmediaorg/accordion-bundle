@@ -7,11 +7,13 @@ use OHMedia\AccordionBundle\Entity\AccordionItem;
 use OHMedia\AccordionBundle\Form\AccordionItemType;
 use OHMedia\AccordionBundle\Repository\AccordionItemRepository;
 use OHMedia\AccordionBundle\Security\Voter\AccordionItemVoter;
+use OHMedia\BackendBundle\Form\MultiSaveType;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\UtilityBundle\Form\DeleteType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -39,7 +41,7 @@ class AccordionItemController extends AbstractController
 
         $form = $this->createForm(AccordionItemType::class, $accordionItem);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class);
 
         $form->handleRequest($request);
 
@@ -49,9 +51,7 @@ class AccordionItemController extends AbstractController
 
                 $this->addFlash('notice', 'The item was created successfully.');
 
-                return $this->redirectToRoute('accordion_view', [
-                    'id' => $accordion->getId(),
-                ]);
+                return $this->redirectForm($accordionItem, $form);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -72,14 +72,14 @@ class AccordionItemController extends AbstractController
         $this->denyAccessUnlessGranted(
             AccordionItemVoter::EDIT,
             $accordionItem,
-            'You cannot edit this accordion item.'
+            'You cannot edit this item.'
         );
 
         $accordion = $accordionItem->getAccordion();
 
         $form = $this->createForm(AccordionItemType::class, $accordionItem);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class);
 
         $form->handleRequest($request);
 
@@ -87,11 +87,9 @@ class AccordionItemController extends AbstractController
             if ($form->isValid()) {
                 $this->accordionItemRepository->save($accordionItem, true);
 
-                $this->addFlash('notice', 'The accordion item was updated successfully.');
+                $this->addFlash('notice', 'The item was updated successfully.');
 
-                return $this->redirectToRoute('accordion_view', [
-                    'id' => $accordion->getId(),
-                ]);
+                return $this->redirectForm($accordionItem, $form);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -104,6 +102,25 @@ class AccordionItemController extends AbstractController
         ]);
     }
 
+    private function redirectForm(AccordionItem $accordionItem, FormInterface $form): Response
+    {
+        $clickedButtonName = $form->getClickedButton()->getName() ?? null;
+
+        if ('keep_editing' === $clickedButtonName) {
+            return $this->redirectToRoute('accordion_item_edit', [
+                'id' => $accordionItem->getId(),
+            ]);
+        } elseif ('add_another' === $clickedButtonName) {
+            return $this->redirectToRoute('accordion_item_create', [
+                'id' => $accordionItem->getAccordion()->getId(),
+            ]);
+        } else {
+            return $this->redirectToRoute('accordion_view', [
+                'id' => $accordionItem->getAccordion()->getId(),
+            ]);
+        }
+    }
+
     #[Route('/accordion/item/{id}/delete', name: 'accordion_item_delete', methods: ['GET', 'POST'])]
     public function delete(
         Request $request,
@@ -112,7 +129,7 @@ class AccordionItemController extends AbstractController
         $this->denyAccessUnlessGranted(
             AccordionItemVoter::DELETE,
             $accordionItem,
-            'You cannot delete this accordion item.'
+            'You cannot delete this item.'
         );
 
         $accordion = $accordionItem->getAccordion();
@@ -127,7 +144,7 @@ class AccordionItemController extends AbstractController
             if ($form->isValid()) {
                 $this->accordionItemRepository->remove($accordionItem, true);
 
-                $this->addFlash('notice', 'The accordion item was deleted successfully.');
+                $this->addFlash('notice', 'The item was deleted successfully.');
 
                 return $this->redirectToRoute('accordion_view', [
                     'id' => $accordion->getId(),
