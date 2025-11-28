@@ -4,7 +4,7 @@
 
 {% block breadcrumbs %}
 {{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb(bootstrap_icon('arrow-down-square-fill') ~ ' Accordions', 'accordion_index'),
+  bootstrap_breadcrumb(bootstrap_icon('menu-button-wide') ~ ' Accordions', 'accordion_index'),
 ) }}
 {% endblock %}
 
@@ -50,7 +50,7 @@
           <td>
             {% if is_granted(attributes.accordion.view, accordion) %}
             <a class="btn btn-sm btn-primary btn-action" href="{{ path('accordion_view', {id: accordion.id}) }}" title="View">
-              {{ bootstrap_icon('arrow-down-square-fill') }}
+              {{ bootstrap_icon('menu-button-wide') }}
               <span class="visually-hidden">View</span>
             </a>
             {% endif %}

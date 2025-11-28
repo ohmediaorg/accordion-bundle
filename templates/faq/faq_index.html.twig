@@ -4,7 +4,7 @@
 
 {% block breadcrumbs %}
 {{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb(bootstrap_icon('question-circle-fill') ~ ' FAQs', 'faq_index'),
+  bootstrap_breadcrumb(bootstrap_icon('question-circle') ~ ' FAQs', 'faq_index'),
 ) }}
 {% endblock %}
 
@@ -50,7 +50,7 @@
           <td>
             {% if is_granted(attributes.faq.view, faq) %}
             <a class="btn btn-sm btn-primary btn-action" href="{{ path('faq_view', {id: faq.id}) }}" title="View">
-              {{ bootstrap_icon('question-circle-fill') }}
+              {{ bootstrap_icon('question-circle') }}
               <span class="visually-hidden">View</span>
             </a>
             {% endif %}

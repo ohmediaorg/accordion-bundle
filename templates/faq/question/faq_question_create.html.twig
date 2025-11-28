@@ -4,7 +4,7 @@
 
 {% block breadcrumbs %}
 {{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb(bootstrap_icon('question-circle-fill') ~ ' FAQs', 'faq_index'),
+  bootstrap_breadcrumb(bootstrap_icon('question-circle') ~ ' FAQs', 'faq_index'),
   bootstrap_breadcrumb(faq, 'faq_view', {id: faq.id}),
   bootstrap_breadcrumb('Create Question'),
 ) }}
