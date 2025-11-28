@@ -1,19 +1,18 @@
 {% extends '@OHMediaBackend/base.html.twig' %}
 
-{% block meta_title %}{{ faq }} | Accordions{% endblock %}
+{% block meta_title %}{{ faq }} | FAQs{% endblock %}
 
 {% block breadcrumbs %}
-{{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb(bootstrap_icon('question-circle') ~ ' FAQs', 'faq_index'),
-  bootstrap_breadcrumb(faq),
-) }}
+  {{ bootstrap_breadcrumbs(
+    bootstrap_breadcrumb(bootstrap_icon('question-circle') ~ ' FAQs', 'faq_index'),
+    bootstrap_breadcrumb(faq),
+  ) }}
 {% endblock %}
 
 {% set can_create_question = is_granted(attributes.faq_question.create, new_faq_question) %}
 {% set create_question_href = path('faq_question_create', {id: faq.id}) %}
 
 {% block actions %}
-<div class="btn-group btn-group-sm">
   {% if can_create_question %}
     <a class="btn btn-primary" href="{{ create_question_href }}">
       {{ bootstrap_icon('plus-lg') }}
@@ -21,7 +20,7 @@
     </a>
   {% endif %}
   {% if is_granted(attributes.faq.edit, faq) %}
-    <a class="btn btn-primary" href="{{ path('faq_edit', {id: faq.id}) }}">
+    <a class="btn btn-secondary" href="{{ path('faq_edit', {id: faq.id}) }}">
       {{ bootstrap_icon('pencil') }}
       Edit
     </a>
@@ -32,65 +31,81 @@
       Delete
     </a>
   {% endif %}
-</div>
 {% endblock %}
 
 {% block main %}
-<div class="card">
-  <div class="card-body">
-    <div class="card-title card-title-with-count">
-      <h1 class="card-title-heading">Questions</h1>
-      <div class="card-title-count">
-        {{ bootstrap_badge_primary(faq.questions|length) }}
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title card-title-with-count">
+        <h1 class="card-title-heading">Questions</h1>
+        <div class="card-title-count">
+          {{ bootstrap_badge_primary(faq.questions|length) }}
+        </div>
       </div>
-    </div>
-    <h2 class="card-subtitle mb-3 text-body-secondary h5">{{ faq }}</h2>
+      <h2 class="card-subtitle mb-3 text-body-secondary h5">{{ faq }}</h2>
 
-    {% if faq.questions|length %}
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th style="width:1rem">&nbsp;</th>
-          <th>Question</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody
-        data-sortable
-        data-sortable-csrf-name="{{ csrf_token_name }}"
-        data-sortable-csrf-token="{{ csrf_token(csrf_token_name) }}"
-        data-sortable-url="{{ path('faq_question_reorder_post', {id: faq.id}) }}"
-      >
-      {% for faq_question in faq.questions %}
-        <tr data-id="{{ faq_question.id }}">
-          <td data-handle>{{ bootstrap_icon('arrows-move') }}</td>
-          <td>{{ faq_question.question }}</td>
-          <td>
-            {% if is_granted(attributes.faq_question.edit, faq_question) %}
-            <a class="btn btn-sm btn-primary btn-action" href="{{ path('faq_question_edit', {id: faq_question.id}) }}" title="Edit">
-              {{ bootstrap_icon('pencil') }}
-              <span class="visually-hidden">Edit</span>
-            </a>
-            {% endif %}
-            {% if is_granted(attributes.faq_question.delete, faq_question) %}
-            <a class="btn btn-sm btn-danger btn-action" href="{{ path('faq_question_delete', {id: faq_question.id}) }}" title="Delete" data-confirm="Are you sure you want to delete this question? Clicking OK will take you to a verification step to delete this entry.">
-              {{ bootstrap_icon('trash') }}
-              <span class="visually-hidden">Delete</span>
-            </a>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% else %}
-    <p>
-      No questions found.
-      {% if can_create_question %}
-      <a href="{{ create_question_href }}">Click here to add a question.</a>
+      {% if faq.questions|length %}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th style="width:1rem">&nbsp;</th>
+              <th>Question</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody
+            data-sortable
+            data-sortable-csrf-name="{{ csrf_token_name }}"
+            data-sortable-csrf-token="{{ csrf_token(csrf_token_name) }}"
+            data-sortable-url="{{ path('faq_question_reorder_post', {id: faq.id}) }}"
+          >
+            {% for faq_question in faq.questions %}
+              {{ _self.table_row(faq_question, attributes) }}
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>
+          No questions found.
+          {% if can_create_question %}
+          <a href="{{ create_question_href }}">Click here to add a question.</a>
+          {% endif %}
+        </p>
       {% endif %}
-    </p>
-    {% endif %}
+    </div>
   </div>
-</div>
 {% endblock %}
+
+{% macro table_row(faq_question, attributes) %}
+  {% set row_actions = [] %}
+
+  {% if is_granted(attributes.faq_question.edit, faq_question) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'faq_question_edit',
+      route_params: {id: faq_question.id},
+      color: 'secondary',
+      icon: 'pen',
+      text: 'Edit Question',
+    }]) %}
+  {% endif %}
+  {% if is_granted(attributes.faq_question.delete, faq_question) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'faq_question_delete',
+      route_params: {id: faq_question.id},
+      color: 'danger',
+      icon: 'trash',
+      text: 'Delete Question',
+      confirm: 'Are you sure you want to delete this question? Clicking OK will take you to a verification step to delete this entry.',
+    }]) %}
+  {% endif %}
+
+  <tr data-id="{{ faq_question.id }}">
+    <td data-handle>{{ bootstrap_icon('arrows-move') }}</td>
+    <td>{{ faq_question.question }}</td>
+    <td>
+      {% include '@OHMediaBackend/widget/row_actions.html.twig' with {
+        row_actions: row_actions,
+      } only %}
+    </td>
+  </tr>
+{% endmacro %}
