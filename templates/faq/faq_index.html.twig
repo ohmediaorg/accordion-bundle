@@ -76,6 +76,7 @@
       text: 'View FAQ',
     }]) %}
   {% endif %}
+
   {% if is_granted(attributes.faq.edit, faq) %}
     {% set row_actions = row_actions|merge([{
       route: 'faq_edit',
@@ -85,6 +86,7 @@
       text: 'Edit FAQ',
     }]) %}
   {% endif %}
+
   {% if is_granted(attributes.faq.delete, faq) %}
     {% set row_actions = row_actions|merge([{
       route: 'faq_delete',

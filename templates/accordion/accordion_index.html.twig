@@ -76,6 +76,7 @@
       text: 'View Accordion',
     }]) %}
   {% endif %}
+
   {% if is_granted(attributes.accordion.edit, accordion) %}
     {% set row_actions = row_actions|merge([{
       route: 'accordion_edit',
@@ -85,6 +86,7 @@
       text: 'Edit Accordion',
     }]) %}
   {% endif %}
+
   {% if is_granted(attributes.accordion.delete, accordion) %}
     {% set row_actions = row_actions|merge([{
       route: 'accordion_delete',

@@ -88,6 +88,7 @@
       text: 'Edit Item',
     }]) %}
   {% endif %}
+
   {% if is_granted(attributes.accordion_item.delete, accordion_item) %}
     {% set row_actions = row_actions|merge([{
       route: 'accordion_item_delete',

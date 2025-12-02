@@ -88,6 +88,7 @@
       text: 'Edit Question',
     }]) %}
   {% endif %}
+
   {% if is_granted(attributes.faq_question.delete, faq_question) %}
     {% set row_actions = row_actions|merge([{
       route: 'faq_question_delete',
