@@ -3,6 +3,7 @@
 namespace OHMedia\AccordionBundle\Controller;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\ORM\QueryBuilder;
 use OHMedia\AccordionBundle\Entity\Accordion;
 use OHMedia\AccordionBundle\Entity\AccordionItem;
 use OHMedia\AccordionBundle\Form\AccordionType;
@@ -16,9 +17,12 @@ use OHMedia\BootstrapBundle\Service\Paginator;
 use OHMedia\UtilityBundle\Form\DeleteType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -38,7 +42,7 @@ class AccordionController extends AbstractController
     }
 
     #[Route('/accordions', name: 'accordion_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $newAccordion = new Accordion();
 
@@ -51,11 +55,59 @@ class AccordionController extends AbstractController
         $qb = $this->accordionRepository->createQueryBuilder('a');
         $qb->orderBy('a.name', 'asc');
 
+        $searchForm = $this->getSearchForm($request);
+
+        $this->applySearch($searchForm, $qb);
+
         return $this->render('@OHMediaAccordion/accordion/accordion_index.html.twig', [
             'pagination' => $this->paginator->paginate($qb, 20),
             'new_accordion' => $newAccordion,
             'attributes' => $this->getAttributes(),
+            'search_form' => $searchForm,
         ]);
+    }
+
+    private function getSearchForm(Request $request): FormInterface
+    {
+        $formBuilder = $this->container->get('form.factory')
+            ->createNamedBuilder('', FormType::class, null, [
+                'csrf_protection' => false,
+            ]);
+
+        $formBuilder->setMethod('GET');
+
+        $formBuilder->add('search', TextType::class, [
+            'required' => false,
+        ]);
+
+        $form = $formBuilder->getForm();
+
+        $form->handleRequest($request);
+
+        return $form;
+    }
+
+    private function applySearch(FormInterface $form, QueryBuilder $qb): void
+    {
+        $search = $form->get('search')->getData();
+
+        if ($search) {
+            $qb->leftJoin('a.items', 'i');
+
+            $searchFields = [
+                'a.name',
+                'i.header',
+                'i.content',
+            ];
+
+            $searchLikes = [];
+            foreach ($searchFields as $searchField) {
+                $searchLikes[] = "$searchField LIKE :search";
+            }
+
+            $qb->andWhere('('.implode(' OR ', $searchLikes).')')
+                ->setParameter('search', '%'.$search.'%');
+        }
     }
 
     #[Route('/accordion/create', name: 'accordion_create', methods: ['GET', 'POST'])]
