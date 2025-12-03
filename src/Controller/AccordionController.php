@@ -78,6 +78,9 @@ class AccordionController extends AbstractController
 
         $formBuilder->add('search', TextType::class, [
             'required' => false,
+            'attr' => [
+                'placeholder' => 'Accordion name, item header/content',
+            ],
         ]);
 
         $form = $formBuilder->getForm();

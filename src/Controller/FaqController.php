@@ -78,6 +78,9 @@ class FaqController extends AbstractController
 
         $formBuilder->add('search', TextType::class, [
             'required' => false,
+            'attr' => [
+                'placeholder' => 'FAQ name, question/answer text',
+            ],
         ]);
 
         $form = $formBuilder->getForm();
