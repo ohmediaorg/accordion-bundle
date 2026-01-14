@@ -14,7 +14,7 @@ class FaqNavItemProvider extends AbstractNavItemProvider
     {
         if ($this->isGranted(FaqVoter::INDEX, new Faq())) {
             return (new NavLink('FAQs', 'faq_index'))
-                ->setIcon('question-circle-fill');
+                ->setIcon('question-circle');
         }
 
         return null;

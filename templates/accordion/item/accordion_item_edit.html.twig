@@ -3,9 +3,9 @@
 {% set form_title = 'Edit Accordion Item' %}
 
 {% block breadcrumbs %}
-{{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb(bootstrap_icon('arrow-down-square-fill') ~ ' Accordions', 'accordion_index'),
-  bootstrap_breadcrumb(accordion, 'accordion_view', {id: accordion.id}),
-  bootstrap_breadcrumb('Edit Item'),
-) }}
+  {{ bootstrap_breadcrumbs(
+    bootstrap_breadcrumb(bootstrap_icon('menu-button-wide') ~ ' Accordions', 'accordion_index'),
+    bootstrap_breadcrumb(accordion, 'accordion_view', {id: accordion.id}),
+    bootstrap_breadcrumb('Edit Item'),
+  ) }}
 {% endblock %}

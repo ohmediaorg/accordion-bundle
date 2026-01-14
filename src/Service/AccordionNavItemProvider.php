@@ -14,7 +14,7 @@ class AccordionNavItemProvider extends AbstractNavItemProvider
     {
         if ($this->isGranted(AccordionVoter::INDEX, new Accordion())) {
             return (new NavLink('Accordions', 'accordion_index'))
-                ->setIcon('arrow-down-square-fill');
+                ->setIcon('menu-button-wide');
         }
 
         return null;

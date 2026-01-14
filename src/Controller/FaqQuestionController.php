@@ -7,11 +7,13 @@ use OHMedia\AccordionBundle\Entity\FaqQuestion;
 use OHMedia\AccordionBundle\Form\FaqQuestionType;
 use OHMedia\AccordionBundle\Repository\FaqQuestionRepository;
 use OHMedia\AccordionBundle\Security\Voter\FaqQuestionVoter;
+use OHMedia\BackendBundle\Form\MultiSaveType;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\UtilityBundle\Form\DeleteType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -39,7 +41,7 @@ class FaqQuestionController extends AbstractController
 
         $form = $this->createForm(FaqQuestionType::class, $faqQuestion);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class);
 
         $form->handleRequest($request);
 
@@ -49,9 +51,7 @@ class FaqQuestionController extends AbstractController
 
                 $this->addFlash('notice', 'The question was created successfully.');
 
-                return $this->redirectToRoute('faq_view', [
-                    'id' => $faq->getId(),
-                ]);
+                return $this->redirectForm($faqQuestion, $form);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -79,7 +79,7 @@ class FaqQuestionController extends AbstractController
 
         $form = $this->createForm(FaqQuestionType::class, $faqQuestion);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class);
 
         $form->handleRequest($request);
 
@@ -89,9 +89,7 @@ class FaqQuestionController extends AbstractController
 
                 $this->addFlash('notice', 'The question was updated successfully.');
 
-                return $this->redirectToRoute('faq_view', [
-                    'id' => $faq->getId(),
-                ]);
+                return $this->redirectForm($faqQuestion, $form);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -102,6 +100,25 @@ class FaqQuestionController extends AbstractController
             'faq_question' => $faqQuestion,
             'faq' => $faq,
         ]);
+    }
+
+    private function redirectForm(FaqQuestion $faqQuestion, FormInterface $form): Response
+    {
+        $clickedButtonName = $form->getClickedButton()->getName() ?? null;
+
+        if ('keep_editing' === $clickedButtonName) {
+            return $this->redirectToRoute('faq_question_edit', [
+                'id' => $faqQuestion->getId(),
+            ]);
+        } elseif ('add_another' === $clickedButtonName) {
+            return $this->redirectToRoute('faq_question_create', [
+                'id' => $faqQuestion->getFaq()->getId(),
+            ]);
+        } else {
+            return $this->redirectToRoute('faq_view', [
+                'id' => $faqQuestion->getFaq()->getId(),
+            ]);
+        }
     }
 
     #[Route('/faq/question/{id}/delete', name: 'faq_question_delete', methods: ['GET', 'POST'])]

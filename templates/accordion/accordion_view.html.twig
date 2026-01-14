@@ -3,94 +3,110 @@
 {% block meta_title %}{{ accordion }} | Accordions{% endblock %}
 
 {% block breadcrumbs %}
-{{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb(bootstrap_icon('arrow-down-square-fill') ~ ' Accordions', 'accordion_index'),
-  bootstrap_breadcrumb(accordion),
-) }}
+  {{ bootstrap_breadcrumbs(
+    bootstrap_breadcrumb(bootstrap_icon('menu-button-wide') ~ ' Accordions', 'accordion_index'),
+    bootstrap_breadcrumb(accordion),
+  ) }}
 {% endblock %}
 
 {% set can_create_item = is_granted(attributes.accordion_item.create, new_accordion_item) %}
 {% set create_item_href = path('accordion_item_create', {id: accordion.id}) %}
 
 {% block actions %}
-<div class="btn-group btn-group-sm">
   {% if can_create_item %}
     <a class="btn btn-primary" href="{{ create_item_href }}">
-      {{ bootstrap_icon('plus') }}
+      {{ bootstrap_icon('plus-lg') }}
       Add Item
     </a>
   {% endif %}
   {% if is_granted(attributes.accordion.edit, accordion) %}
-    <a class="btn btn-primary" href="{{ path('accordion_edit', {id: accordion.id}) }}">
-      {{ bootstrap_icon('pen-fill') }}
-      Edit
+    <a class="btn btn-secondary" href="{{ path('accordion_edit', {id: accordion.id}) }}">
+      {{ bootstrap_icon('pencil') }}
+      Edit Accordion
     </a>
   {% endif %}
   {% if is_granted(attributes.accordion_item.delete, accordion) %}
     <a class="btn btn-danger" href="{{ path('accordion_delete', {id: accordion.id}) }}" data-confirm="Are you sure you want to delete this accordion? Clicking OK will take you to a verification step to delete this entry.">
-      {{ bootstrap_icon('trash-fill') }}
-      Delete
+      {{ bootstrap_icon('trash') }}
+      Delete Accordion
     </a>
   {% endif %}
-</div>
 {% endblock %}
 
 {% block main %}
-<div class="card">
-  <div class="card-body">
-    <div class="card-title card-title-with-count">
-      <h1 class="card-title-heading">Items</h1>
-      <div class="card-title-count">
-        {{ bootstrap_badge_primary(accordion.items|length) }}
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title card-title-with-count">
+        <h1 class="card-title-heading">Items</h1>
+        <div class="card-title-count">
+          {{ bootstrap_badge_primary(accordion.items|length) }}
+        </div>
       </div>
-    </div>
-    <h2 class="card-subtitle mb-3 text-body-secondary h5">{{ accordion }}</h2>
+      <h2 class="card-subtitle mb-3 text-body-secondary h5">{{ accordion }}</h2>
 
-    {% if accordion.items|length %}
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th style="width:1rem">&nbsp;</th>
-          <th>Item</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody
-        data-sortable
-        data-sortable-csrf-name="{{ csrf_token_name }}"
-        data-sortable-csrf-token="{{ csrf_token(csrf_token_name) }}"
-        data-sortable-url="{{ path('accordion_item_reorder_post', {id: accordion.id}) }}"
-      >
-      {% for accordion_item in accordion.items %}
-        <tr data-id="{{ accordion_item.id }}">
-          <td data-handle>{{ bootstrap_icon('arrows-move') }}</td>
-          <td>{{ accordion_item.header }}</td>
-          <td>
-            {% if is_granted(attributes.accordion_item.edit, accordion_item) %}
-            <a class="btn btn-sm btn-primary btn-action" href="{{ path('accordion_item_edit', {id: accordion_item.id}) }}" title="Edit">
-              {{ bootstrap_icon('pen-fill') }}
-              <span class="visually-hidden">Edit</span>
-            </a>
-            {% endif %}
-            {% if is_granted(attributes.accordion_item.delete, accordion_item) %}
-            <a class="btn btn-sm btn-danger btn-action" href="{{ path('accordion_item_delete', {id: accordion_item.id}) }}" title="Delete" data-confirm="Are you sure you want to delete this item? Clicking OK will take you to a verification step to delete this entry.">
-              {{ bootstrap_icon('trash-fill') }}
-              <span class="visually-hidden">Delete</span>
-            </a>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% else %}
-    <p>
-      No items found.
-      {% if can_create_item %}
-      <a href="{{ create_item_href }}">Click here to add an item.</a>
+      {% if accordion.items|length %}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th style="width:1rem">&nbsp;</th>
+              <th>Item</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody
+            data-sortable
+            data-sortable-csrf-name="{{ csrf_token_name }}"
+            data-sortable-csrf-token="{{ csrf_token(csrf_token_name) }}"
+            data-sortable-url="{{ path('accordion_item_reorder_post', {id: accordion.id}) }}"
+          >
+            {% for accordion_item in accordion.items %}
+              {{ _self.table_row(accordion_item, attributes) }}
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>
+          No items found.
+          {% if can_create_item %}
+            <a href="{{ create_item_href }}">Click here to add an item.</a>
+          {% endif %}
+        </p>
       {% endif %}
-    </p>
-    {% endif %}
+    </div>
   </div>
-</div>
 {% endblock %}
+
+{% macro table_row(accordion_item, attributes) %}
+  {% set row_actions = [] %}
+
+  {% if is_granted(attributes.accordion_item.edit, accordion_item) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'accordion_item_edit',
+      route_params: {id: accordion_item.id},
+      color: 'secondary',
+      icon: 'pencil',
+      text: 'Edit Item',
+    }]) %}
+  {% endif %}
+
+  {% if is_granted(attributes.accordion_item.delete, accordion_item) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'accordion_item_delete',
+      route_params: {id: accordion_item.id},
+      color: 'danger',
+      icon: 'trash',
+      text: 'Delete Item',
+      confirm: 'Are you sure you want to delete this item? Clicking OK will take you to a verification step to delete this entry.',
+    }]) %}
+  {% endif %}
+
+  <tr data-id="{{ accordion_item.id }}">
+    <td data-handle>{{ bootstrap_icon('arrows-move') }}</td>
+    <td>{{ accordion_item.header }}</td>
+    <td>
+      {% include '@OHMediaBackend/widget/row_actions.html.twig' with {
+        row_actions: row_actions,
+      } only %}
+    </td>
+  </tr>
+{% endmacro %}

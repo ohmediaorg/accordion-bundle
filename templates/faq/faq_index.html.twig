@@ -3,9 +3,9 @@
 {% block meta_title %}FAQs{% endblock %}
 
 {% block breadcrumbs %}
-{{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb(bootstrap_icon('question-circle-fill') ~ ' FAQs', 'faq_index'),
-) }}
+  {{ bootstrap_breadcrumbs(
+    bootstrap_breadcrumb(bootstrap_icon('question-circle') ~ ' FAQs', 'faq_index'),
+  ) }}
 {% endblock %}
 
 {% set can_create_faq = is_granted(attributes.faq.create, new_faq) %}
@@ -13,76 +13,112 @@
 {% set create_faq_href = path('faq_create') %}
 
 {% block actions %}
-{% if can_create_faq %}
-<a href="{{ create_faq_href }}" class="btn btn-sm btn-primary">
-  {{ bootstrap_icon('plus') }} Add FAQ</a>
-{% endif %}
+  {% if can_create_faq %}
+    <a href="{{ create_faq_href }}" class="btn btn-primary">
+      {{ bootstrap_icon('plus-lg') }}
+      Add FAQ
+    </a>
+  {% endif %}
 {% endblock %}
 
 {% block main %}
-<div class="card">
-  <div class="card-body">
-    <div class="card-title card-title-with-count">
-      <h1 class="card-title-heading">FAQs</h1>
-      <div class="card-title-count">
-        {{ bootstrap_badge_primary(pagination.count) }}
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title card-title-with-count">
+        <h1 class="card-title-heading">FAQs</h1>
+        <div class="card-title-count">
+          {{ bootstrap_badge_primary(pagination.count) }}
+        </div>
       </div>
+
+      {{ form_start(search_form) }}
+        <div class="row align-items-end">
+          <div class="col-lg-6 col-sm-12">
+            {{ form_row(search_form.search) }}
+          </div>
+          <div class="col-lg-12 col-sm-12">
+            <button class="btn btn-outline-dark mb-3" type="submit">Search</button>
+            <a class="btn btn-secondary mb-3" href="{{ path('faq_index') }}">Reset</a>
+          </div>
+        </div>
+      {{ form_end(search_form) }}
+
+      {% if pagination.count %}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Questions</th>
+              <th>Shortcode</th>
+              <th>Last Updated</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for faq in pagination.results %}
+              {{ _self.table_row(faq, attributes) }}
+            {% endfor %}
+          </tbody>
+        </table>
+
+        {{ bootstrap_pagination(pagination) }}
+
+        <small>{{ bootstrap_pagination_info(pagination) }}</small>
+      {% else %}
+        <p>
+          No FAQs found.
+          {% if can_create_faq %}
+          <a href="{{ create_faq_href }}">Click here to add an FAQ.</a>
+          {% endif %}
+        </p>
+      {% endif %}
     </div>
-
-    {% if pagination.count %}
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Questions</th>
-          <th>Shortcode</th>
-          <th>Last Updated</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for faq in pagination.results %}
-        <tr>
-          <td>{{ faq.name }}</td>
-          <td>{{ faq.questions|length }}</td>
-          <td>{{ shortcode('faq(' ~ faq.id ~ ')') }}</td>
-          <td>{{ faq.updatedAt|datetime }}</td>
-          <td>
-            {% if is_granted(attributes.faq.view, faq) %}
-            <a class="btn btn-sm btn-primary btn-action" href="{{ path('faq_view', {id: faq.id}) }}" title="View">
-              {{ bootstrap_icon('question-circle-fill') }}
-              <span class="visually-hidden">View</span>
-            </a>
-            {% endif %}
-            {% if is_granted(attributes.faq.edit, faq) %}
-            <a class="btn btn-sm btn-primary btn-action" href="{{ path('faq_edit', {id: faq.id}) }}" title="Edit">
-              {{ bootstrap_icon('pen-fill') }}
-              <span class="visually-hidden">Edit</span>
-            </a>
-            {% endif %}
-            {% if is_granted(attributes.faq.delete, faq) %}
-            <a class="btn btn-sm btn-danger btn-action" href="{{ path('faq_delete', {id: faq.id}) }}" title="Delete" data-confirm="Are you sure you want to delete this FAQ? Clicking OK will take you to a verification step to delete this entry.">
-              {{ bootstrap_icon('trash-fill') }}
-              <span class="visually-hidden">Delete</span>
-            </a>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-    {{ bootstrap_pagination(pagination) }}
-
-    <small>{{ bootstrap_pagination_info(pagination) }}</small>
-    {% else %}
-      <p>
-        No FAQs found.
-        {% if can_create_faq %}
-        <a href="{{ create_faq_href }}">Click here to add an FAQ.</a>
-        {% endif %}
-      </p>
-    {% endif %}
   </div>
-</div>
 {% endblock %}
+
+{% macro table_row(faq, attributes) %}
+  {% set row_actions = [] %}
+
+  {% if is_granted(attributes.faq.view, faq) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'faq_view',
+      route_params: {id: faq.id},
+      color: 'outline-dark',
+      icon: 'eye',
+      text: 'View FAQ',
+    }]) %}
+  {% endif %}
+
+  {% if is_granted(attributes.faq.edit, faq) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'faq_edit',
+      route_params: {id: faq.id},
+      color: 'secondary',
+      icon: 'pencil',
+      text: 'Edit FAQ',
+    }]) %}
+  {% endif %}
+
+  {% if is_granted(attributes.faq.delete, faq) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'faq_delete',
+      route_params: {id: faq.id},
+      color: 'danger',
+      icon: 'trash',
+      text: 'Delete FAQ',
+      confirm: 'Are you sure you want to delete this FAQ? Clicking OK will take you to a verification step to delete this entry.',
+    }]) %}
+  {% endif %}
+
+  <tr>
+    <td>{{ faq.name }}</td>
+    <td>{{ faq.questions|length }}</td>
+    <td>{{ shortcode('faq(' ~ faq.id ~ ')') }}</td>
+    <td>{{ faq.updatedAt|datetime }}</td>
+    <td>
+      {% include '@OHMediaBackend/widget/row_actions.html.twig' with {
+        row_actions: row_actions,
+      } only %}
+    </td>
+  </tr>
+{% endmacro %}
