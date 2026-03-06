@@ -37,7 +37,7 @@ class WysiwygExtension extends AbstractWysiwygExtension
         ];
     }
 
-    public function accordion(Environment $twig, int $id = null)
+    public function accordion(Environment $twig, ?int $id = null)
     {
         if (isset($this->accordions[$id])) {
             // prevent infinite recursion
@@ -74,7 +74,7 @@ class WysiwygExtension extends AbstractWysiwygExtension
         ]);
     }
 
-    public function faq(Environment $twig, int $id = null)
+    public function faq(Environment $twig, ?int $id = null)
     {
         if (isset($this->faqs[$id])) {
             // prevent infinite recursion
