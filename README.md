@@ -11,7 +11,7 @@ Update `composer.json` by adding this to the `repositories` array:
 
 Then run `composer require ohmediaorg/accordion-bundle:dev-main`.
 
-Import the routes in `config/routes.yaml`:
+If you are not using Symfony 7.4, import the routes in `config/routes.yaml`:
 
 ```yaml
 oh_media_accordion:
