@@ -28,7 +28,7 @@ class Faq
      * @var Collection<int, FaqQuestion>
      */
     #[ORM\OneToMany(targetEntity: FaqQuestion::class, mappedBy: 'faq', orphanRemoval: true)]
-    #[ORM\OrderBy(['ordinal' => 'ASC'])]
+    #[ORM\OrderBy(['ordinal' => \SortDirection::Ascending])]
     private Collection $questions;
 
     public function __construct()

@@ -53,7 +53,7 @@ class FaqController extends AbstractController
         );
 
         $qb = $this->faqRepository->createQueryBuilder('f');
-        $qb->orderBy('f.name', 'asc');
+        $qb->orderBy('f.name', \SortDirection::Ascending);
 
         $searchForm = $this->getSearchForm($request);
 

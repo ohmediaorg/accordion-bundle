@@ -20,7 +20,7 @@ class FaqShortcodeProvider extends AbstractShortcodeProvider
     public function buildShortcodes(): void
     {
         $faqs = $this->faqRepository->createQueryBuilder('f')
-            ->orderBy('f.name', 'asc')
+            ->orderBy('f.name', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
 

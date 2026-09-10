@@ -28,7 +28,7 @@ class Accordion
      * @var Collection<int, AccordionItem>
      */
     #[ORM\OneToMany(targetEntity: AccordionItem::class, mappedBy: 'accordion', orphanRemoval: true)]
-    #[ORM\OrderBy(['ordinal' => 'ASC'])]
+    #[ORM\OrderBy(['ordinal' => \SortDirection::Ascending])]
     private Collection $items;
 
     public function __construct()

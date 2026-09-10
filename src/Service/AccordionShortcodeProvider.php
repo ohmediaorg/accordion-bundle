@@ -20,7 +20,7 @@ class AccordionShortcodeProvider extends AbstractShortcodeProvider
     public function buildShortcodes(): void
     {
         $accordions = $this->accordionRepository->createQueryBuilder('a')
-            ->orderBy('a.name', 'asc')
+            ->orderBy('a.name', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
 

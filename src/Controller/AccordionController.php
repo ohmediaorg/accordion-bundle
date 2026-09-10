@@ -53,7 +53,7 @@ class AccordionController extends AbstractController
         );
 
         $qb = $this->accordionRepository->createQueryBuilder('a');
-        $qb->orderBy('a.name', 'asc');
+        $qb->orderBy('a.name', \SortDirection::Ascending);
 
         $searchForm = $this->getSearchForm($request);
 
