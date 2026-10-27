@@ -25,9 +25,9 @@ class FaqQuestion
     #[ORM\JoinColumn(nullable: false)]
     private ?Faq $faq = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 150)]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 100)]
+    #[Assert\Length(max: 150)]
     private ?string $question = null;
 
     #[ORM\Column(type: Types::TEXT)]
