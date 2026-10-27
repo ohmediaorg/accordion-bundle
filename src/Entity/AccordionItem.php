@@ -25,9 +25,9 @@ class AccordionItem
     #[ORM\JoinColumn(nullable: false)]
     private ?Accordion $accordion = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 150)]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 100)]
+    #[Assert\Length(max: 150)]
     private ?string $header = null;
 
     #[ORM\Column(type: Types::TEXT)]
